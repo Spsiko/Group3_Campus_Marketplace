@@ -1,7 +1,16 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useCart } from "../../context/CartContext";
 import { useNavigate } from "react-router-dom";
-import "../../style/StudentCart.scss";
+import "../../style/studentcart.scss";
+/*
+type CartItem = {
+  id: string;               // the Supabase listing UUID
+  image?: string;
+  title: string;
+  price: number;
+  seller_id: string;        // optional but useful for seller dashboard
+};
+*/
 export default function StudentCart() {
     const { cart, removeFromCart, clearCart } = useCart();
     const navigate = useNavigate();

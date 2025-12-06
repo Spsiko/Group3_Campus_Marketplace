@@ -317,50 +317,42 @@ export default function ManageListings() {
             alert('You must be logged in to delete listings.');
             return;
         }
-
         // Check if user has admin privileges
         const userData = localStorage.getItem('cm_user');
         if (!userData) {
             alert('Session expired. Please log in again.');
             return;
         }
-
         const parsedUser = JSON.parse(userData);
         if (parsedUser.role !== 'admin') {
             alert('Only administrators can delete listings.');
             return;
         }
-
         // First try to read the listing to make sure it exists
         const { data: existingListing, error: readError } = await supabase
             .from('listings')
             .select('id, title')
             .eq('id', id)
             .single();
-
         if (readError) {
             console.error('Error reading listing:', readError);
             alert(`Error accessing listing: ${readError.message}`);
             return;
         }
-
         if (!existingListing) {
             alert('Listing not found.');
             return;
         }
-
         const ok = window.confirm("Are you sure you want to delete this listing? This cannot be undone.");
-        if (!ok) return;
-
+        if (!ok)
+            return;
         // Try delete operation
         const { error } = await supabase.from("listings").delete().eq("id", id);
-
         if (error) {
             console.error('Supabase delete error:', error);
             alert(`Error deleting listing: ${error.message}`);
             return;
         }
-
         // Update local state
         setRows((prev) => prev.filter((r) => r.id !== id));
         setTotalMatching((prev) => Math.max(0, prev - 1));
@@ -418,20 +410,32 @@ export default function ManageListings() {
                                                                 setMenuPosition(null);
                                                                 handleDuplicate(l);
                                                             }, children: "Create copy" }), _jsx("button", { className: "danger", onClick: () => {
+                                                                console.log('Delete button clicked for listing:', l.id);
                                                                 setActionMenuOpenId(null);
                                                                 setMenuPosition(null);
                                                                 handleDelete(l.id);
                                                             }, children: "Delete" })] }))] }) })] }, l.id))), _jsxs("div", { className: "tfoot", children: [_jsx("div", { children: totalMatching === 0
                                             ? "Showing 0 of 0 listings"
-                                            : `Showing ${start}–${end} of ${totalMatching} listings` }), _jsxs("div", { className: "pager", children: [_jsx("button", { className: "btn btn--ghost", onClick: () => setPage((p) => Math.max(0, p - 1)), disabled: page === 0 || loading, children: "Previous" }), _jsx("button", { className: "btn btn--ghost", onClick: () => setPage((p) => Math.min(totalPages - 1, p + 1)), disabled: page + 1 >= totalPages || loading, children: "Next" })] })] })] })] }), editForm && (_jsx("div", { className: "modal-backdrop", children: _jsxs("div", { className: "modal", children: [_jsx("h2", { children: "Edit listing" }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Title" }), _jsx("input", { value: editForm.title, onChange: (e) => setEditForm((f) => f ? { ...f, title: e.target.value } : f) })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Price" }), _jsx("input", { type: "number", min: "0", value: editForm.price, onChange: (e) => setEditForm((f) => f ? { ...f, price: e.target.value } : f) })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Category" }), _jsxs("select", { value: editForm.category, onChange: (e) => setEditForm((f) => f ? { ...f, category: e.target.value } : f), children: [_jsx("option", { value: "Books", children: "Books" }), _jsx("option", { value: "Electronics", children: "Electronics" }), _jsx("option", { value: "Furniture", children: "Furniture" }), _jsx("option", { value: "Clothing", children: "Clothing" }), _jsx("option", { value: "Other", children: "Other" })] })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Status" }), _jsxs("select", { value: editForm.status, onChange: (e) => setEditForm((f) => f
+                                            : `Showing ${start}–${end} of ${totalMatching} listings` }), _jsxs("div", { className: "pager", children: [_jsx("button", { className: "btn btn--ghost", onClick: () => setPage((p) => Math.max(0, p - 1)), disabled: page === 0 || loading, children: "Previous" }), _jsx("button", { className: "btn btn--ghost", onClick: () => setPage((p) => Math.min(totalPages - 1, p + 1)), disabled: page + 1 >= totalPages || loading, children: "Next" })] })] })] })] }), editForm && (_jsx("div", { className: "modal-backdrop", children: _jsxs("div", { className: "modal", children: [_jsxs("div", { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 16px 8px 16px' }, children: [_jsx("h2", { style: { margin: 0 }, children: "Edit Listing" }), _jsx("button", { onClick: () => setEditForm(null), style: {
+                                        background: 'none',
+                                        border: '1px solid #e5e7eb',
+                                        borderRadius: '8px',
+                                        width: '32px',
+                                        height: '32px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        color: '#6b7280'
+                                    }, "aria-label": "Close modal", children: "\u00D7" })] }), _jsxs("div", { className: "field", children: [_jsx("span", { children: "Title" }), _jsx("input", { type: "text", value: editForm.title, onChange: (e) => setEditForm((f) => f ? { ...f, title: e.target.value } : f), placeholder: "Enter listing title" })] }), _jsxs("div", { className: "field", children: [_jsx("span", { children: "Price ($)" }), _jsx("input", { type: "number", min: "0", step: "0.01", value: editForm.price, onChange: (e) => setEditForm((f) => f ? { ...f, price: e.target.value } : f), placeholder: "0.00" })] }), _jsxs("div", { className: "field", children: [_jsx("span", { children: "Category" }), _jsxs("select", { value: editForm.category, onChange: (e) => setEditForm((f) => f ? { ...f, category: e.target.value } : f), children: [_jsx("option", { value: "Books", children: "Books" }), _jsx("option", { value: "Electronics", children: "Electronics" }), _jsx("option", { value: "Furniture", children: "Furniture" }), _jsx("option", { value: "Clothing", children: "Clothing" }), _jsx("option", { value: "Other", children: "Other" })] })] }), _jsxs("div", { className: "field", children: [_jsx("span", { children: "Status" }), _jsxs("select", { value: editForm.status, onChange: (e) => setEditForm((f) => f
                                         ? {
                                             ...f,
                                             status: e.target.value,
                                         }
-                                        : f), children: [_jsx("option", { value: "Active", children: "Active" }), _jsx("option", { value: "Pending", children: "Pending" }), _jsx("option", { value: "Sold", children: "Sold" }), _jsx("option", { value: "Rejected", children: "Rejected" })] })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Condition" }), _jsxs("select", { value: editForm.condition, onChange: (e) => setEditForm((f) => f
+                                        : f), children: [_jsx("option", { value: "Active", children: "Active" }), _jsx("option", { value: "Pending", children: "Pending" }), _jsx("option", { value: "Sold", children: "Sold" }), _jsx("option", { value: "Rejected", children: "Rejected" })] })] }), _jsxs("div", { className: "field", children: [_jsx("span", { children: "Condition" }), _jsxs("select", { value: editForm.condition, onChange: (e) => setEditForm((f) => f
                                         ? {
                                             ...f,
                                             condition: e.target.value,
                                         }
-                                        : f), children: [_jsx("option", { value: "Like New", children: "Like New" }), _jsx("option", { value: "Good", children: "Good" }), _jsx("option", { value: "Used", children: "Used" })] })] }), _jsxs("div", { className: "modal-actions", children: [_jsx("button", { className: "btn btn--ghost", onClick: () => setEditForm(null), disabled: saving, children: "Cancel" }), _jsx("button", { className: "btn", onClick: handleSaveEdit, disabled: saving, children: "Save changes" })] })] }) }))] }));
+                                        : f), children: [_jsx("option", { value: "Like New", children: "Like New" }), _jsx("option", { value: "Good", children: "Good" }), _jsx("option", { value: "Used", children: "Used" })] })] }), _jsxs("div", { className: "modal-actions", children: [_jsx("button", { className: "btn btn--ghost", onClick: () => setEditForm(null), disabled: saving, children: "Cancel" }), _jsx("button", { className: "btn btn--primary", onClick: handleSaveEdit, disabled: saving, children: saving ? "Saving..." : "Save Changes" })] })] }) }))] }));
 }

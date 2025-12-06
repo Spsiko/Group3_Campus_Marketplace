@@ -5,7 +5,7 @@ import { supabase } from "../../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { getUser } from "../../lib/auth";
 export default function Checkout() {
-    const { cart, clearCart } = useCart();
+    const { cart } = useCart();
     const navigate = useNavigate();
     const subtotal = cart.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
     async function handlePlaceOrder() {

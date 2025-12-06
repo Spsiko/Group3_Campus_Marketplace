@@ -3,11 +3,12 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../style/StudentCheckout.scss";
+//import { sendNotificationToUser } from "../../lib/notifications";
 import { supabase } from "../../lib/supabaseClient";
 import { useCart } from "../../context/CartContext";
 import { getUser } from "../../lib/auth";
 export default function StudentCheckoutSuccess() {
-    const { cart, clearCart } = useCart();
+    const { cart } = useCart();
     const navigate = useNavigate();
     const hasRun = useRef(false);
     // ------------------------------------------------------------
@@ -70,27 +71,7 @@ export default function StudentCheckoutSuccess() {
                 return;
             }
             console.log("ORDER CREATED:", order);
-            // ---------------------------
-            // 3. Mark purchased listings as PENDING
-            // ---------------------------
-            /*
-            try {
-              await Promise.all(
-                cart.map((item) =>
-                  supabase
-                    .from("listings")
-                    .update({
-                      status: "pending",
-                      updated_at: new Date().toISOString(),
-                    })
-                    .eq("id", item.id)
-                )
-              );
-            } catch (err) {
-              console.error("LISTING UPDATE FAILED:", err);
-            }
-              */
-            // 3. Mark listings as PENDING
+            // 3. Mark listings as sold
             try {
                 for (const item of cart) {
                     if (!item.id) {
@@ -104,8 +85,8 @@ export default function StudentCheckoutSuccess() {
                         status: "sold",
                         updated_at: new Date().toISOString(),
                     })
-                        .eq("id", item.id)
-                        .select();
+                        .eq("id", item.id);
+                    //.select();
                     if (error) {
                         console.error("LISTING UPDATE ERROR:", error);
                     }
@@ -145,7 +126,7 @@ export default function StudentCheckoutSuccess() {
             // ---------------------------
             // 6. Clear cart
             // ---------------------------
-            clearCart();
+            //clearCart();
         }
         finalizeOrder();
     }, []);
