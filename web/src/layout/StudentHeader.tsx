@@ -1,4 +1,4 @@
-import "../style/StudentHeader.scss";
+import "../style/studentheader.scss";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { ShoppingCart, User } from "lucide-react"; // lightweight icons

@@ -1,0 +1,55 @@
+.my-listings-page {
+    padding: 24px;
+  
+    h2 {
+      margin-bottom: 20px;
+    }
+  }
+  
+  .listings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  
+  .listing-card {
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+  
+    img {
+      width: 100%;
+      height: 170px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+  
+    h3 {
+      margin: 10px 0;
+    }
+  
+    .price {
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+  
+    .btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+  
+      &.primary {
+        background: #4f46e5;
+        color: white;
+      }
+  
+      &.disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+    }
+  }
+  
