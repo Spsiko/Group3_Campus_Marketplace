@@ -1,6 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState } from "react";
-import "../../style/AdminProfile.scss";
+import "../../style/adminprofile.scss";
 // import { supabase } from "../../lib/supabaseClient";
 export default function AdminProfile() {
     const [fullName, setFullName] = useState("Admin User");

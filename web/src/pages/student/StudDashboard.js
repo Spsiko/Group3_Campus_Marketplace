@@ -2,7 +2,7 @@ import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-run
 import DashboardSection from "../../components/DashboardSection";
 import { useListings } from "../../lib/UseListing";
 import { useNavigate } from "react-router-dom";
-import "../../style/Dashboard.scss";
+import "../../style/dashboard.scss";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { useRecentListings } from "../../lib/UseRecentLisings";

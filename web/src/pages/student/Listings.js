@@ -2,7 +2,7 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import ListingGrid from "../../components/ListingGrid";
-import "../../style/Listings.scss";
+import "../../style/listings.scss";
 import { useListings } from "../../lib/UseListing";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";

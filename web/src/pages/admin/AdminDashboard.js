@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
-import "../../style/AdminDashboard.scss";
+import "../../style/admindashboard.scss";
 export default function AdminDashboard() {
     const [totalUsers, setTotalUsers] = useState(null);
     const [totalPosts, setTotalPosts] = useState(null);

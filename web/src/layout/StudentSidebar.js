@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import { useCallback, useEffect, useState } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
-import "../style/StudentSidebar.scss";
+import "../style/studentsidebar.scss";
 import { supabase } from "../lib/supabaseClient";
 function getStoredUser() {
     try {

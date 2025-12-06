@@ -1,6 +1,6 @@
 import { jsxs as _jsxs, jsx as _jsx, Fragment as _Fragment } from "react/jsx-runtime";
 import { useCart } from "../../context/CartContext";
-import "../../style/StudentCart.scss";
+import "../../style/studentcart.scss";
 export default function StudentCart() {
     const { cart, removeFromCart, clearCart } = useCart();
     const totalPrice = cart.reduce((sum, item) => {

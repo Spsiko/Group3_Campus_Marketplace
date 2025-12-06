@@ -2,7 +2,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
-import "../../style/Login.scss"; // Stealing login styling for consistency
+import "../../style/login.scss"; // Stealing login styling for consistency
 export default function ResetPassword() {
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");

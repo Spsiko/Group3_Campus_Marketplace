@@ -1,4 +1,4 @@
-import "../style/AdminHeader.scss";
+import "../style/adminheader.scss";
 type Props = {
     open: boolean;
     setOpen: (v: boolean) => void;

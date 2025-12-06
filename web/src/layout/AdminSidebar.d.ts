@@ -1,4 +1,4 @@
-import "../style/AdminSidebar.scss";
+import "../style/adminsidebar.scss";
 type Props = {
     open: boolean;
     onClose?: () => void;

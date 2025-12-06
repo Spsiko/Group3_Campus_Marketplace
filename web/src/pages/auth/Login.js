@@ -3,7 +3,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabaseClient";
-import "../../style/Login.scss";
+import "../../style/login.scss";
 const SETTINGS_KEY = "default";
 export default function Login() {
     const [role, setRole] = useState("student");
