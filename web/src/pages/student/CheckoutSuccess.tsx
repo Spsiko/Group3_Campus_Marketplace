@@ -10,7 +10,7 @@ import { useCart } from "../../context/CartContext";
 import { getUser } from "../../lib/auth";
 
 export default function StudentCheckoutSuccess() {
-  const { cart, clearCart } = useCart();
+  const { cart } = useCart();
   const navigate = useNavigate();
   const hasRun = useRef(false);
 
@@ -154,7 +154,7 @@ try {
       // ---------------------------
       // 6. Clear cart
       // ---------------------------
-      clearCart();
+      //clearCart();
     }
 
     finalizeOrder();
