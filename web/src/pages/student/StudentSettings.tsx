@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../../style/studentsettings.scss";
+import "../../style/StudentSettings.scss";
 
 export default function StudentProfile() {
   const [tab, setTab] = useState<"profile" | "settings">("profile");

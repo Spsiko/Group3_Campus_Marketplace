@@ -1,7 +1,8 @@
-import "../style/studentheader.scss";
+import "../style/StudentHeader.scss";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { ShoppingCart, User } from "lucide-react"; // lightweight icons
+import NotificationBell from "../components/NotificationBell";
 
 type Props = {
   open: boolean;
@@ -23,6 +24,8 @@ export default function StudentHeader({ open, setOpen }: Props) {
       <div /> 
 
       {/*new addition*/}
+
+      
 
       {/* Right: Cart + Profile */}
       <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
@@ -51,6 +54,8 @@ export default function StudentHeader({ open, setOpen }: Props) {
             </span>
           )}
         </Link>
+
+        <NotificationBell />
 
         {/* Profile */}
         <Link

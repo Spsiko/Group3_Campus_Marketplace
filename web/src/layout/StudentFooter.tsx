@@ -1,4 +1,4 @@
-import "../style/studentfooter.scss";
+import "../style/StudentFooter.scss";
 
 export default function StudentFooter() {
   return (

@@ -1,7 +1,6 @@
 import { Navigate, Routes, Route } from "react-router-dom";
 import { CartProvider } from "../context/CartContext";
 
-
 // public
 import LandingPage from "../pages/LandingPage";
 import Login from "../pages/auth/Login";
@@ -21,12 +20,19 @@ import AdminProfile from "../pages/admin/AdminProfile";
 import ReportsPage from "../pages/admin/Reports";
 
 // student
+import StudentLayout from "../layout/StudentLayout";
 import StudDashboard from "../pages/student/StudDashboard";
-import Sell from "../pages/student/Sell";
-import Messages from "../pages/student/Messages";
-import Account from "../pages/student/Account";
+import Sell from "../pages/student/StudentSell";
+import Messages from "../pages/student/StudentMessages";
 import Listings from "../pages/student/Listings"
-import ListingDetailPage from "../pages/student/ListingDetails";
+import Profile from "../pages/student/StudentProfile";
+import StudentProduct from "../pages/student/StudentProduct";
+import Cart from "../pages/student/StudentCart";
+import StudentCheckout from "../pages/student/StudentCheckout"
+import CheckoutSuccess from "../pages/student/CheckoutSuccess";
+import Orders from "../pages/student/StudentOrders";
+import StudentChat from "../pages/student/StudentChat";
+import Seller from "../pages/student/Seller";
 
 export default function AppRoutes() {
   return (
@@ -53,16 +59,25 @@ export default function AppRoutes() {
       </Route>
 
       {/* student */}
-      <Route path="/student" element={<Navigate to="/Listings" replace />} />
-      <Route path="Listings" element={<Listings />} />
-      <Route path="/student/dashboard" element={<StudDashboard />} />
-      <Route path="Sell" element={<Sell />} />
-      <Route path="Messages" element={<Messages />} />
-      <Route path="Account" element={<Account />} />
-      <Route path="/listing/:id" element={<ListingDetailPage />} />
 
-        {/* 404 */}
-      <Route path="*" element={<div style={{ padding: 20 }}>Not Found</div>} />
+        <Route path="/student" element={<StudentLayout />}>
+          <Route index element={<Navigate to="StudDashboard" replace />} />
+          <Route path="dashboard" element={<StudDashboard />} />
+          <Route path="sell" element={<Sell />} />
+          <Route path="listings" element={<Listings />} />
+          <Route path="product" element={<StudentProduct />} />
+          <Route path="messages" element={<Messages />} />
+          <Route path="messages/:listingId/:otherUserId" element={<StudentChat />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="listing/:id" element={<StudentProduct />} />
+          <Route path="cart" element={<Cart />} />
+          <Route path="checkout" element={<StudentCheckout />} />
+          <Route path="checkoutsuccess" element={<CheckoutSuccess />} />
+          <Route path="orders" element={<Orders />} />
+          <Route path="Seller" element={<Seller />} />
+          <Route path="*" element={<div style={{ padding: 20 }}>Not Found</div>} />
+        </Route>
+      
     </Routes>
     </CartProvider>
   );

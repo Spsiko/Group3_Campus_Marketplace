@@ -1,5 +1,8 @@
 // Very small client-side mock auth
-export type User = { email: string; name: string }
+export type User = {
+  auth_user_id: any;
+  id: any; email: string; name: string 
+}
 const KEY = 'cm_user'
 
 export function getUser(): User | null {
@@ -22,7 +25,11 @@ export async function signIn(email: string, password: string): Promise<User> {
   }
   // Demo rule: any valid email/password works. Use name from email prefix.
   const name = email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-  const user: User = { email, name: name || 'Student' }
+  const user: User = {
+    email, name: name || 'Student',
+    id: undefined,
+    auth_user_id: undefined
+  }
   localStorage.setItem(KEY, JSON.stringify(user))
   return user
 }

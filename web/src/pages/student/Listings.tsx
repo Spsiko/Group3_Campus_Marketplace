@@ -5,7 +5,7 @@ import type { Listing } from "../../lib/listings";
 import "../../style/listings.scss";
 import { useListings } from "../../lib/UseListing";
 import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+//import Footer from "../../components/Footer";
 import { useRecentListings } from "../../lib/UseRecentLisings";
 
 type CategoryFilter = "all" | string;
@@ -288,7 +288,7 @@ export default function ListingsPage() {
           )}
         </main>
       </div>
-      <Footer />
+      
     </>
   );
 }

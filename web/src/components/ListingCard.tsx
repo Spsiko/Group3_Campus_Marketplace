@@ -7,7 +7,7 @@ interface ListingCardProps {
 
 export default function ListingCard({ listing }: ListingCardProps) {
     return (
-        <Link to={`/listing/${listing.id}`} className="listing-card">
+        <Link to={`/student/listing/${listing.id}`} className="listing-card">
         {listing.imageUrl && (
             <div className="listing-card__image-wrapper">
             <img

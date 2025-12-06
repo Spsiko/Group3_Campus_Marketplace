@@ -202,3 +202,25 @@
     }
   }
 }
+
+
+.tabs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.logout-btn {
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.logout-btn:hover {
+  background: #f5f5f5;
+}

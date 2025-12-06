@@ -1,0 +1,121 @@
+.report-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
+  }
+  
+  .report-box {
+    width: 100%;
+    max-width: 520px;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 26px 30px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+    animation: fadeIn 0.2s ease-out;
+  }
+  
+  .report-box h3 {
+    text-align: center;
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+  }
+  
+  label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+    color: #4b5563;
+  }
+  
+  select,
+  textarea {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+    outline: none;
+  }
+  
+  select:focus,
+  textarea:focus {
+    border-color: #d4b483;
+    box-shadow: 0 0 0 3px rgba(212, 180, 131, 0.25);
+  }
+  
+  textarea {
+    resize: vertical;
+    min-height: 110px;
+  }
+  
+  /* -----------------------------
+     ACTION BUTTONS – MATCH PRODUCT PAGE
+     ----------------------------- */
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  
+  /* -----------------------------
+   ACTION BUTTONS – MATCH PRODUCT PAGE + BORDER
+   ----------------------------- */
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  
+  .btn {
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  
+  /* Primary = Add to Cart style (with border now) */
+  .btn.primary {
+    background: #d4b483;
+    color: #111827;
+    border: 1px solid #d4b483;     /* ADDED BORDER */
+  }
+  
+  .btn.primary:hover {
+    background: #c6a06f;
+    border-color: #c6a06f;         /* Hover border match */
+  }
+  
+  /* Ghost = Message Seller style (border already present) */
+  .btn.ghost {
+    background: white;
+    border: 1px solid #ddd;        /* Subtle border */
+    color: #111;
+  }
+  
+  .btn.ghost:hover {
+    background: #ccc;
+    border-color: #ccc;            /* Slight hover change */
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  

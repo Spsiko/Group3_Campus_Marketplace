@@ -5,7 +5,7 @@ export default function StudentCart() {
   const { cart, removeFromCart, clearCart } = useCart();
 
   const totalPrice = cart.reduce((sum, item) => {
-    const price = parseFloat(item.price.replace(/[^0-9.]/g, ""));
+    const price = item.price;
     return sum + (isNaN(price) ? 0 : price);
   }, 0);
 

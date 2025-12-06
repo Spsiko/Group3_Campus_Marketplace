@@ -1,130 +1,130 @@
 .student-product {
-  --bg: #f7f7f8;
-  --card: #fff;
-  --line: #e5e7eb;
-  --text: #111827;
-  --muted: #6b7280;
-  --brand: #d4b483;
-  --brand-hover: #caa469;
-  --shadow: 0 1px 3px rgba(16, 24, 40, 0.08);
-
-  background: var(--bg);
+  padding: 40px;
+  background: #f9f9f9;
   min-height: 100vh;
-  padding: 40px 24px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
 
   .sp-container {
+    max-width: 1180px;
+    margin: 0 auto;
     display: flex;
-    flex-wrap: wrap;
-    gap: 32px;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    box-shadow: var(--shadow);
-    padding: 24px;
-    max-width: 960px;
-    width: 100%;
-  }
+    gap: 40px;
 
-  .sp-image-wrap {
-    flex: 1 1 45%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    .sp-image {
-      width: 100%;
-      max-height: 420px;
-      object-fit: cover;
-      border-radius: 12px;
-      border: 1px solid var(--line);
+    @media (max-width: 840px) {
+      flex-direction: column;
     }
   }
 
-  .sp-details {
-    flex: 1 1 50%;
-    display: flex;
-    flex-direction: column;
+  /** Gallery */
+  .sp-gallery {
+    flex: 1;
+    display: grid;
     gap: 12px;
-    color: var(--text);
+  }
 
-    .sp-title {
-      font-size: 24px;
-      font-weight: 700;
+  .sp-main-img {
+    width: 100%;
+    border-radius: 12px;
+    object-fit: cover;
+    max-height: 420px;
+  }
+
+  .sp-thumb-row {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+  }
+
+  .sp-thumb {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+
+  .sp-thumb.active {
+    border-color: #d4b483;
+  }
+
+  /** Details */
+  .sp-details {
+    flex: 1;
+    display: grid;
+    gap: 16px;
+  }
+
+  .sp-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+
+  .sp-price {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #14532d;
+  }
+
+  .sp-badges {
+    display: flex;
+    gap: 8px;
+  }
+
+  .sp-badge {
+    background: #e7e5e4;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .sp-desc {
+    color: #444;
+    line-height: 1.5;
+  }
+
+  .sp-meta {
+    background: #fafafa;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #e6e6e6;
+
+    p {
+      margin: 4px 0;
     }
+  }
 
-    .sp-category {
-      color: var(--muted);
-      font-size: 14px;
-    }
+  .sp-warning {
+    color: #b91c1c;
+    font-weight: 600;
+  }
 
-    .sp-condition {
-      font-size: 14px;
-      color: var(--muted);
-    }
+  .sp-actions {
+    display: flex;
+    gap: 12px;
 
-    .sp-price {
-      color: #047857;
-      font-size: 20px;
-      font-weight: 700;
-      margin: 8px 0;
-    }
-
-    .sp-meta {
-      display: flex;
-      flex-direction: column;
-      font-size: 14px;
-      color: var(--muted);
-
-      .sp-date {
-        font-size: 13px;
-      }
-    }
-
-    .sp-desc {
-      margin-top: 8px;
-      line-height: 1.5;
-      color: var(--text);
-    }
-
-    .sp-btn {
-      margin-top: 18px;
-      padding: 10px 16px;
-      border: none;
+    .btn {
+      padding: 12px 18px;
       border-radius: 10px;
-      font-weight: 600;
-      font-size: 15px;
-      background: var(--brand);
-      color: #111;
+      font-size: 0.95rem;
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.2s ease;
+      border: none;
+    }
 
+    .primary {
+      background: #d4b483;
       &:hover {
-        background: var(--brand-hover);
+        background: #c6a06f;
       }
     }
-  }
 
-  .student-product__notfound {
-    padding: 80px;
-    text-align: center;
-    color: var(--muted);
-    font-size: 18px;
-  }
-
-  @media (max-width: 820px) {
-    padding: 24px;
-    .sp-container {
-      flex-direction: column;
-      padding: 20px;
-    }
-    .sp-image-wrap {
-      flex: 1 1 100%;
-    }
-    .sp-details {
-      flex: 1 1 100%;
+    .ghost {
+      background: white;
+      border: 1px solid #ddd;
+      &:hover {
+        background: #f5f5f5;
+      }
     }
   }
 }

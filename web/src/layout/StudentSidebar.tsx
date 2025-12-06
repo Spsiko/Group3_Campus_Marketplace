@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
-import "../style/studentsidebar.scss";
+import "../style/StudentSidebar.scss";
 import { supabase } from "../lib/supabaseClient";
 
 type Props = {
@@ -101,8 +101,8 @@ export default function StudentSidebar({ open, onClose }: Props) {
             <NavLink to="/student/profile" onClick={closeOnClick} className="navitem">
               Profile
             </NavLink>
-            <NavLink to="/student/product" onClick={closeOnClick} className="navitem">
-              Product
+            <NavLink to="/student/Orders" onClick={closeOnClick} className="navitem">
+              My Orders
             </NavLink>
           </nav>
         </div>
