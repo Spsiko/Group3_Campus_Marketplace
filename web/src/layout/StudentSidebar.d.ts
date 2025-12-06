@@ -1,4 +1,4 @@
-import "../style/studentsidebar.scss";
+import "../style/StudentSidebar.scss";
 type Props = {
     open: boolean;
     onClose?: () => void;

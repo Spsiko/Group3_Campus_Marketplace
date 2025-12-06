@@ -19,6 +19,7 @@ export default function AdminDashboard() {
   const [revenue, setRevenue] = useState<number | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
+
   useEffect(() => {
     const loadDashboard = async () => {
       // ---------- TOTAL USERS ----------
@@ -108,16 +109,15 @@ export default function AdminDashboard() {
       const { data: notifData, error: notifError } = await supabase
         .from("notifications")
         .select("*")
-        .order("created_at", { ascending: false })
-        .limit(4);
+        .order("created_at", { ascending: false });
 
       if (!notifError && notifData) {
         setNotifications(
           notifData.map((n: any) => ({
             id: n.id,
-            user_name: n.user_name,
-            action: n.action,
-            status: n.status as NotificationStatus,
+            user_name: n.user_name || 'Unknown User',
+            action: n.action || 'Unknown Action',
+            status: n.status as NotificationStatus || 'active',
             created_at: n.created_at,
           }))
         );
@@ -183,7 +183,11 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <div className="card activity">
+      <div className="card activity" style={{
+        maxHeight: '600px',
+        overflowY: 'auto',
+        overflowX: 'hidden'
+      }}>
         <div className="activity-title">Recent Activity</div>
 
         {notifications.map((n) => (

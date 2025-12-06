@@ -1,14 +1,16 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 // web/src/pages/auth/Login.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabaseClient";
+import { Eye, EyeOff } from "lucide-react";
 import "../../style/login.scss";
 const SETTINGS_KEY = "default";
 export default function Login() {
     const [role, setRole] = useState("student");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [restrictions, setRestrictions] = useState(null);
     const [, setSettingsLoaded] = useState(false);
@@ -34,6 +36,32 @@ export default function Login() {
         };
         loadSettings();
     }, []);
+    // Google sign-in handler
+    const handleGoogleSignIn = async () => {
+        if (submitting)
+            return;
+        setSubmitting(true);
+        try {
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: "google",
+                options: {
+                    redirectTo: `${window.location.origin}/login`
+                }
+            });
+            if (error) {
+                console.error("Google sign-in error:", error);
+                alert(`Google sign-in failed: ${error.message}`);
+            }
+            // On success, Supabase will redirect to Google, then back to our app
+        }
+        catch (err) {
+            console.error("Unexpected Google sign-in error:", err);
+            alert("Something went wrong during Google sign-in. Please try again.");
+        }
+        finally {
+            setSubmitting(false);
+        }
+    };
     const handleLogin = async (e) => {
         e.preventDefault();
         if (submitting)
@@ -157,5 +185,5 @@ export default function Login() {
             setSubmitting(false);
         }
     };
-    return (_jsx("div", { className: "login-page", children: _jsxs("div", { className: "login-card", children: [_jsxs("div", { className: "role-tabs", children: [_jsx("button", { className: role === "student" ? "active" : "", "data-testid": "role-student", onClick: () => setRole("student"), type: "button", children: "Student" }), _jsx("button", { className: role === "admin" ? "active" : "", "data-testid": "role-admin", onClick: () => setRole("admin"), type: "button", children: "Admin" })] }), _jsx("h2", { children: role === "student" ? "Student Login" : "Admin Login" }), _jsxs("form", { onSubmit: handleLogin, children: [_jsx("label", { children: "Email Address *" }), _jsx("input", { "data-testid": "login-email", type: "email", placeholder: "Enter your email", value: email, onChange: (e) => setEmail(e.target.value), autoComplete: "username", required: true }), _jsx("label", { children: "Password *" }), _jsx("input", { "data-testid": "login-password", type: "password", placeholder: "Enter your password", value: password, onChange: (e) => setPassword(e.target.value), autoComplete: "current-password", required: true }), _jsx("p", { className: "forgot-password-link", onClick: () => navigate("/forgot-password"), children: "Forgot Password?" }), _jsx("button", { type: "submit", className: "login-btn", "data-testid": "login-submit", disabled: submitting, children: submitting ? "Logging in..." : "Log In" })] }), _jsx("div", { className: "divider", children: "OR" }), _jsxs("button", { className: "google-btn", type: "button", children: [_jsx("img", { src: "/Google-icon.jpeg", alt: "Google" }), "Sign in with Google"] }), _jsx("button", { className: "back-btn", onClick: () => navigate("/"), type: "button", children: "Back to Landing Page" })] }) }));
+    return (_jsx("div", { className: "login-page", children: _jsxs("div", { className: "login-card", children: [_jsxs("div", { className: "role-tabs", children: [_jsx("button", { className: role === "student" ? "active" : "", "data-testid": "role-student", onClick: () => setRole("student"), type: "button", children: "Student" }), _jsx("button", { className: role === "admin" ? "active" : "", "data-testid": "role-admin", onClick: () => setRole("admin"), type: "button", children: "Admin" })] }), _jsx("h2", { children: role === "student" ? "Student Login" : "Admin Login" }), _jsxs("form", { onSubmit: handleLogin, children: [_jsx("label", { children: "Email Address *" }), _jsx("input", { "data-testid": "login-email", type: "email", placeholder: "Enter your email", value: email, onChange: (e) => setEmail(e.target.value), autoComplete: "username", required: true }), _jsx("label", { children: "Password *" }), _jsxs("div", { className: "password-input-container", children: [_jsx("input", { "data-testid": "login-password", type: showPassword ? "text" : "password", placeholder: "Enter your password", value: password, onChange: (e) => setPassword(e.target.value), autoComplete: "current-password", required: true }), _jsx("button", { type: "button", className: "password-toggle-btn", onClick: () => setShowPassword(!showPassword), "aria-label": showPassword ? "Hide password" : "Show password", children: showPassword ? _jsx(EyeOff, { size: 20 }) : _jsx(Eye, { size: 20 }) })] }), _jsx("p", { className: "forgot-password-link", onClick: () => navigate("/forgot-password"), children: "Forgot Password?" }), _jsx("button", { type: "submit", className: "login-btn", "data-testid": "login-submit", disabled: submitting, children: submitting ? "Logging in..." : "Log In" })] }), role === "student" && (_jsxs(_Fragment, { children: [_jsx("div", { className: "divider", children: "OR" }), _jsxs("button", { className: "google-btn", type: "button", onClick: handleGoogleSignIn, disabled: submitting, children: [_jsx("img", { src: "/Google-icon.jpeg", alt: "Google" }), "Sign in with Google"] })] })), _jsx("button", { className: "back-btn", onClick: () => navigate("/"), type: "button", children: "Back to Landing Page" })] }) }));
 }

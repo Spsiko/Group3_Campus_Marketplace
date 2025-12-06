@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabaseClient";
+import { Eye, EyeOff } from "lucide-react";
 import "../../style/login.scss";
 
 type Role = "student" | "admin";
@@ -18,6 +19,7 @@ export default function Login() {
   const [role, setRole] = useState<Role>("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const [restrictions, setRestrictions] = useState<Restrictions | null>(null);
@@ -48,6 +50,32 @@ export default function Login() {
 
     loadSettings();
   }, []);
+
+  // Google sign-in handler
+  const handleGoogleSignIn = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/login`
+        }
+      });
+
+      if (error) {
+        console.error("Google sign-in error:", error);
+        alert(`Google sign-in failed: ${error.message}`);
+      }
+      // On success, Supabase will redirect to Google, then back to our app
+    } catch (err) {
+      console.error("Unexpected Google sign-in error:", err);
+      alert("Something went wrong during Google sign-in. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -229,15 +257,25 @@ export default function Login() {
           />
 
           <label>Password *</label>
-          <input
-            data-testid="login-password"
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-            required
-          />
+          <div className="password-input-container">
+            <input
+              data-testid="login-password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              required
+            />
+            <button
+              type="button"
+              className="password-toggle-btn"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
 
           <p
             className="forgot-password-link"
@@ -256,13 +294,21 @@ export default function Login() {
           </button>
         </form>
 
+        {role === "student" && (
+          <>
+            <div className="divider">OR</div>
 
-        <div className="divider">OR</div>
-
-        <button className="google-btn" type="button">
-          <img src="/Google-icon.jpeg" alt="Google" />
-          Sign in with Google
-        </button>
+            <button
+              className="google-btn"
+              type="button"
+              onClick={handleGoogleSignIn}
+              disabled={submitting}
+            >
+              <img src="/Google-icon.jpeg" alt="Google" />
+              Sign in with Google
+            </button>
+          </>
+        )}
 
         <button className="back-btn" onClick={() => navigate("/")} type="button">
           Back to Landing Page

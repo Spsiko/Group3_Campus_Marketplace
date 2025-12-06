@@ -90,7 +90,7 @@ export default function Register() {
           {
             full_name: name,
             email,
-            password,           // ✅ satisfies NOT NULL constraint
+            password, // ✅ satisfies NOT NULL constraint
             auth_user_id: authUser.id,
             // DO NOT send role here; let DB default / existing value handle it
           },
@@ -113,6 +113,32 @@ export default function Register() {
         "Registration successful! Please check your email to verify your account before logging in."
       );
       navigate("/login");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Google sign-in handler
+  const handleGoogleSignIn = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/register`
+        }
+      });
+
+      if (error) {
+        console.error("Google sign-in error:", error);
+        alert(`Google sign-in failed: ${error.message}`);
+      }
+      // On success, Supabase will redirect to Google, then back to our app
+    } catch (err) {
+      console.error("Unexpected Google sign-in error:", err);
+      alert("Something went wrong during Google sign-in. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -157,7 +183,7 @@ export default function Register() {
           <label>Confirm Password *</label>
           <input
             type="password"
-            placeholder="Re-enter your password"
+            placeholder="Confirm your password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             data-testid="register-confirm"
@@ -172,12 +198,16 @@ export default function Register() {
           >
             {submitting ? "Signing up..." : "Sign Up"}
           </button>
-
         </form>
 
         <div className="divider">OR</div>
 
-        <button className="google-btn">
+        <button
+          className="google-btn"
+          type="button"
+          onClick={handleGoogleSignIn}
+          disabled={submitting}
+        >
           <img src="/Google-icon.jpeg" alt="Google" />
           Sign up with Google
         </button>

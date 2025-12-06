@@ -123,6 +123,7 @@ form {
   border: 1px solid #ddd;
   border-radius: 8px;
   background: #fff;
+  color: #000; // Make text black for visibility
   font-weight: 500;
   cursor: pointer;
   transition: 0.2s;
@@ -163,6 +164,44 @@ form {
   &:hover {
     color: #a5854d;
     text-decoration: underline;
+  }
+}
+
+.password-input-container {
+  position: relative;
+  width: 100%;
+
+  input {
+    width: 100%;
+    padding-right: 3rem; // Make room for the eye icon
+    box-sizing: border-box;
+  }
+
+  .password-toggle-btn {
+    position: absolute;
+    right: 0.7rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 0.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: 0.2s;
+
+    &:hover {
+      color: #333;
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(212, 180, 131, 0.3);
+    }
   }
 }
 

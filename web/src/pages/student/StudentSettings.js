@@ -1,6 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState } from "react";
-import "../../style/studentsettings.scss";
+import "../../style/StudentSettings.scss";
 export default function StudentProfile() {
     const [tab, setTab] = useState("profile");
     const [fullName, setFullName] = useState("Student User");

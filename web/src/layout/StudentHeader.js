@@ -1,8 +1,9 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import "../style/studentheader.scss";
+import "../style/StudentHeader.scss";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { ShoppingCart, User } from "lucide-react"; // lightweight icons
+import NotificationBell from "../components/NotificationBell";
 export default function StudentHeader({ open, setOpen }) {
     const { cart } = useCart();
     return (_jsxs("header", { className: "student-header", children: [_jsx("button", { className: "brand", type: "button", onClick: () => setOpen(!open), "aria-label": "Toggle admin sidebar", children: "Campus Marketplace" }), _jsx("div", {}), _jsxs("div", { style: { display: "flex", alignItems: "center", gap: "24px" }, children: [_jsxs(Link, { to: "/student/cart", style: { position: "relative", display: "inline-flex", alignItems: "center" }, children: [_jsx(ShoppingCart, { size: 22, color: "#111827" }), cart.length > 0 && (_jsx("span", { style: {
@@ -16,7 +17,7 @@ export default function StudentHeader({ open, setOpen }) {
                                     borderRadius: "999px",
                                     padding: "2px 6px",
                                     lineHeight: 1,
-                                }, children: cart.length }))] }), _jsx(Link, { to: "/student/profile", style: {
+                                }, children: cart.length }))] }), _jsx(NotificationBell, {}), _jsx(Link, { to: "/student/profile", style: {
                             display: "inline-flex",
                             alignItems: "center",
                             justifyContent: "center",

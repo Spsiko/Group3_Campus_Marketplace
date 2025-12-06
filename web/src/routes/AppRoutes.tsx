@@ -61,7 +61,7 @@ export default function AppRoutes() {
       {/* student */}
 
         <Route path="/student" element={<StudentLayout />}>
-          <Route index element={<Navigate to="StudDashboard" replace />} />
+          <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<StudDashboard />} />
           <Route path="sell" element={<Sell />} />
           <Route path="listings" element={<Listings />} />
