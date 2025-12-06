@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabaseClient";
 import { useCart } from "../../context/CartContext";
-import "../../style/StudentProduct.scss";
+import "../../style/studentproduct.scss";
 //import { getUser } from "../../lib/auth";
 
 // ADD THIS IMPORT

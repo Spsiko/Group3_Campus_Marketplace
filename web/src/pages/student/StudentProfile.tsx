@@ -1,7 +1,7 @@
 // src/pages/student/StudentProfile.tsx
 
 import { useEffect, useState } from "react";
-import "../../style/StudentProfile.scss";
+import "../../style/studentprofile.scss";
 import "../../style/SellerOrders.scss";
 import { supabase } from "../../lib/supabaseClient";
 import { getResolvedUser } from "../../lib/resolvedUser";

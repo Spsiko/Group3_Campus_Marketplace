@@ -1,6 +1,6 @@
 import { useCart } from "../../context/CartContext";
 import { useNavigate } from "react-router-dom";
-import "../../style/StudentCart.scss";
+import "../../style/studentcart.scss";
 
 /*
 type CartItem = {
