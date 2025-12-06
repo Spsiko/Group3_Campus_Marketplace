@@ -1,165 +1,66 @@
-/* Shared palette, sizes, and helpers */
-.student-messages {
-  --bg: #f7f7f8;
-  --card: #ffffff;
-  --text: #111827;
-  --muted: #6b7280;
-  --line: #e5e7eb;
-  --shadow: 0 1px 2px rgba(16, 24, 40, 0.06),
-             0 1px 3px rgba(16, 24, 40, 0.1);
-  --radius: 12px;
-  background: var(--bg);
-  color: var(--text);
-  padding: 24px;
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 16px;
+/* MAIN WRAPPER */
+.messages-page {
+  padding: 30px;
+  max-width: 750px;
+  margin: 0 auto;
 }
-.student-messages .card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-  padding: 24px;
+.messages-page h1 {
+  font-size: 28px;
+  margin-bottom: 25px;
+  color: #222;
+  font-weight: 600;
 }
-.student-messages h1 {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 6px;
+
+/* LIST CONTAINER */
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
-.student-messages .muted-sub {
-  color: var(--muted);
-  font-size: 0.9rem;
-  margin-bottom: 20px;
+
+/* A SINGLE CONVERSATION PREVIEW */
+.msg-row {
+  display: block;
+  background: #ffffff;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid #e1e1e1;
+  text-decoration: none;
+  color: #222;
+  transition: 0.15s ease;
 }
-.student-messages .message-layout {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  overflow: hidden;
-  min-height: 500px;
+.msg-row:hover {
+  background: #f4f4f4;
+  border-color: #d1d1d1;
+  transform: translateY(-2px);
 }
-@media (max-width: 900px) {
-  .student-messages .message-layout {
-    grid-template-columns: 1fr;
-  }
-}
-.student-messages .inbox {
-  border-right: 1px solid var(--line);
-  background: #fafafa;
-  overflow-y: auto;
-}
-.student-messages .inbox .inbox-item {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--line);
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-.student-messages .inbox .inbox-item:hover {
-  background: #f3f4f6;
-}
-.student-messages .inbox .inbox-item.is-active {
-  background: #ececec;
-  border-left: 4px solid #d4b483;
-}
-.student-messages .inbox .inbox-item .inbox-header {
+
+/* NAME + TIME HEADER */
+.msg-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
-.student-messages .inbox .inbox-item .inbox-header .sender {
-  font-weight: 700;
-  color: var(--text);
+
+.msg-name {
+  font-size: 17px;
+  font-weight: 600;
+  color: #111;
 }
-.student-messages .inbox .inbox-item .inbox-header .time {
+
+.msg-time {
   font-size: 12px;
-  color: var(--muted);
+  color: #777;
 }
-.student-messages .inbox .inbox-item .preview {
-  font-size: 14px;
-  color: var(--muted);
+
+/* LAST MESSAGE PREVIEW */
+.msg-last {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.3;
+  max-width: 90%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-.student-messages .chat {
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-}
-.student-messages .chat .chat-header {
-  padding: 16px;
-  border-bottom: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-weight: 600;
-}
-.student-messages .chat .chat-header .chat-status {
-  font-size: 13px;
-  color: #047857;
-}
-.student-messages .chat .chat-body {
-  flex: 1;
-  padding: 16px;
-  overflow-y: auto;
-  background: #fff;
-}
-.student-messages .chat .chat-body .bubble {
-  max-width: 70%;
-  margin-bottom: 10px;
-  padding: 10px 14px;
-  border-radius: 14px;
-  line-height: 1.4;
-  font-size: 14px;
-}
-.student-messages .chat .chat-body .incoming {
-  background: #f3f4f6;
-  color: #111827;
-  align-self: flex-start;
-}
-.student-messages .chat .chat-body .outgoing {
-  background: #d4b483;
-  color: #000;
-  align-self: flex-end;
-  margin-left: auto;
-}
-.student-messages .chat .chat-input {
-  border-top: 1px solid var(--line);
-  display: flex;
-  padding: 10px 12px;
-  gap: 8px;
-}
-.student-messages .chat .chat-input .msg-box {
-  flex: 1;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 10px 12px;
-  font-size: 14px;
-}
-.student-messages .chat .chat-input .msg-box:focus {
-  outline: none;
-  border-color: #d4b483;
-  box-shadow: 0 0 0 3px rgba(212, 180, 131, 0.2);
-}
-.student-messages .chat .chat-input .btn.primary {
-  background: #d4b483;
-  color: #000;
-  border-radius: 10px;
-  padding: 10px 16px;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-}
-.student-messages .chat .chat-input .btn.primary:hover {
-  background: #c3a26c;
-}
-.student-messages .chat .chat-empty {
-  display: grid;
-  place-items: center;
-  height: 100%;
-  color: var(--muted);
-}/*# sourceMappingURL=StudentMessages.css.map */
+}/*# sourceMappingURL=studentmessages.css.map */

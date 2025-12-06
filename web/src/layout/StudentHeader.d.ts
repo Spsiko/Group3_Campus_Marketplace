@@ -1,4 +1,4 @@
-import "../style/StudentHeader.scss";
+import "../style/studentheader.scss";
 type Props = {
     open: boolean;
     setOpen: (v: boolean) => void;

@@ -3,57 +3,59 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../style/StudentCheckout.scss";
-//import { sendNotificationToUser } from "../../lib/notifications";
 import { supabase } from "../../lib/supabaseClient";
 import { useCart } from "../../context/CartContext";
 import { getUser } from "../../lib/auth";
+import { sendNotificationToUser } from "../../lib/notifications";
 export default function StudentCheckoutSuccess() {
-    const { cart } = useCart();
+    const { cart, clearCart } = useCart();
     const navigate = useNavigate();
     const hasRun = useRef(false);
     // ------------------------------------------------------------
-    // Map localStorage auth → real user row in `users`
+    // Fetch DB user from users table
     // ------------------------------------------------------------
     async function getDbUser() {
-        const basic = getUser(); // { email, name }
-        if (!basic?.email)
+        const authUser = getUser();
+        console.log("LOCALSTORAGE USER:", authUser);
+        if (!authUser?.email)
             return null;
         const { data, error } = await supabase
             .from("users")
             .select("id, email, full_name")
-            .eq("email", basic.email)
+            .eq("email", authUser.email)
             .single();
-        if (error) {
-            console.error("DB USER LOOKUP FAILED:", error);
-            return null;
-        }
-        return data;
+        console.log("DB LOOKUP RESULT:", data, "ERROR:", error);
+        return data || null;
     }
     // ------------------------------------------------------------
-    // Finalize order on mount
+    // Finalize order after Stripe success
     // ------------------------------------------------------------
     useEffect(() => {
         async function finalizeOrder() {
             if (hasRun.current)
-                return; // prevent double execution
+                return;
             hasRun.current = true;
+            console.log("CHECKOUT SUCCESS PAGE LOADED");
+            // 1. Load DB user
             const dbUser = await getDbUser();
             if (!dbUser) {
+                console.error("No DB user found — redirecting to login");
                 navigate("/login");
                 return;
             }
+            console.log("DB USER FOUND:", dbUser);
             if (!cart || cart.length === 0) {
-                console.warn("CheckoutSuccess loaded with empty cart.");
+                console.warn("Cart empty during CheckoutSuccess.");
                 return;
             }
-            // ---------------------------
-            // 1. Subtotal
-            // ---------------------------
+            console.log("CART CONTENTS:", cart);
+            // 2. Subtotal
             const subtotal = cart.reduce((sum, item) => sum + Number(item.price) * (item.quantity || 1), 0);
             const orderId = `ORD-${Date.now()}`;
-            // ---------------------------
-            // 2. Create order
-            // ---------------------------
+            console.log("ORDER SUBTOTAL:", subtotal, "ORDER ID:", orderId);
+            // --------------------------------------------------------
+            // 3. Create order in `orders` table
+            // --------------------------------------------------------
             const { data: order, error: orderErr } = await supabase
                 .from("orders")
                 .insert({
@@ -71,62 +73,101 @@ export default function StudentCheckoutSuccess() {
                 return;
             }
             console.log("ORDER CREATED:", order);
-            // 3. Mark listings as sold
-            try {
-                for (const item of cart) {
-                    if (!item.id) {
-                        console.warn("Cart item missing listing ID:", item);
-                        continue;
+            // --------------------------------------------------------
+            // 4. Insert rows into order_item table
+            // --------------------------------------------------------
+            const orderItemsPayload = cart.map((item) => ({
+                order_id: orderId,
+                listing_id: item.id,
+                seller_id: item.seller_id,
+                quantity: item.quantity || 1,
+                price: Number(item.price),
+                total_amount: Number(item.price) * (item.quantity || 1),
+            }));
+            console.log("ORDER_ITEM PAYLOAD:", orderItemsPayload);
+            const { error: oiErr } = await supabase
+                .from("order_item")
+                .insert(orderItemsPayload);
+            if (oiErr) {
+                console.error("ORDER_ITEM INSERT FAILED:", oiErr);
+            }
+            else {
+                console.log("ORDER_ITEM INSERTED SUCCESSFULLY");
+            }
+            // --------------------------------------------------------
+            // 5. Update listing statuses
+            // --------------------------------------------------------
+            console.log("UPDATING LISTINGS...");
+            for (const item of cart) {
+                if (!item.id)
+                    continue;
+                console.log("UPDATING LISTING:", item.id);
+                const { error } = await supabase
+                    .from("listings")
+                    .update({
+                    status: "sold",
+                    updated_at: new Date().toISOString(),
+                })
+                    .eq("id", item.id);
+                if (error)
+                    console.error("LISTING UPDATE FAILED", error);
+                else
+                    console.log("LISTING UPDATED SUCCESSFULLY:", item.id);
+            }
+            // --------------------------------------------------------
+            // 6. BUYER notification
+            // --------------------------------------------------------
+            console.log("SENDING BUYER NOTIFICATION →", dbUser.id);
+            await sendNotificationToUser(dbUser.id, `Your order ${orderId} has been placed successfully.`, dbUser.id);
+            // --------------------------------------------------------
+            // 7. SELLER notifications using order_item table
+            // --------------------------------------------------------
+            console.log("FETCHING ORDERED ITEMS FROM order_item...");
+            const { data: orderedItems, error: oiFetchError } = await supabase
+                .from("order_item")
+                .select("seller_id, listing_id")
+                .eq("order_id", orderId);
+            if (oiFetchError) {
+                console.error("Error fetching ordered items:", oiFetchError);
+            }
+            else {
+                console.log("ORDERED ITEMS:", orderedItems);
+            }
+            if (orderedItems && orderedItems.length > 0) {
+                const sellerGroups = {};
+                for (const row of orderedItems) {
+                    if (!sellerGroups[row.seller_id]) {
+                        sellerGroups[row.seller_id] = [];
                     }
-                    console.log("Updating listing:", item.id);
-                    const { data, error } = await supabase
-                        .from("listings")
-                        .update({
-                        status: "sold",
-                        updated_at: new Date().toISOString(),
-                    })
-                        .eq("id", item.id);
-                    //.select();
-                    if (error) {
-                        console.error("LISTING UPDATE ERROR:", error);
-                    }
-                    else {
-                        console.log("LISTING UPDATED:", data);
-                    }
+                    sellerGroups[row.seller_id].push(row.listing_id);
+                }
+                console.log("SELLER GROUPS:", sellerGroups);
+                // Send grouped notifications
+                for (const sellerId of Object.keys(sellerGroups)) {
+                    const listingIds = sellerGroups[sellerId].join(", ");
+                    console.log(`Sending seller notification to ${sellerId} for listings: ${listingIds}`);
+                    await sendNotificationToUser(sellerId, `Your listings (${listingIds}) were purchased in order ${orderId}.`);
+                    // Fetch seller's real name
+                    /*
+                    const { data: seller } = await supabase
+                    .from("users")
+                    .select("full_name")
+                    .eq("id", sellerId)
+                    .maybeSingle();
+          
+                    await sendNotificationToUser(
+                    sellerId,
+                    `Your listings (${listingIds}) were purchased in order ${orderId}.`,
+                    seller?.full_name     // send seller's real name
+                    );
+                    */
                 }
             }
-            catch (err) {
-                console.error("LISTING UPDATE FAILED:", err);
-            }
-            // ---------------------------
-            // 4. Notify BUYER
-            // ---------------------------
-            const buyerNotif = {
-                user_id: dbUser.id,
-                title: "Order Placed",
-                message: `Your order ${order.order_id} has been placed successfully.`,
-            };
-            console.log("BUYER NOTIF:", buyerNotif);
-            await supabase.from("student_notifications").insert(buyerNotif);
-            // ---------------------------
-            // 5. Notify SELLERS
-            // ---------------------------
-            const uniqueSellers = new Set(cart.map((i) => i.seller_id));
-            for (const sellerId of uniqueSellers) {
-                const sellerItems = cart.filter((i) => i.seller_id === sellerId);
-                const itemNames = sellerItems.map((i) => i.title).join(", ");
-                const sellerNotif = {
-                    user_id: sellerId,
-                    title: "New Purchase",
-                    message: `Your item(s) ${itemNames} were purchased in order ${order.order_id}.`,
-                };
-                console.log("SELLER NOTIF:", sellerNotif);
-                await supabase.from("seller_notifications").insert(sellerNotif);
-            }
-            // ---------------------------
-            // 6. Clear cart
-            // ---------------------------
-            //clearCart();
+            // --------------------------------------------------------
+            // 8. Clear cart
+            // --------------------------------------------------------
+            console.log("CLEARING CART...");
+            clearCart();
         }
         finalizeOrder();
     }, []);

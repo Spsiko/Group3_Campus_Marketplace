@@ -1,91 +1,85 @@
-/* Shared palette, sizes, and helpers */
 .student-sell {
   --bg: #f7f7f8;
   --card: #ffffff;
+  --line: #e5e7eb;
   --text: #111827;
   --muted: #6b7280;
-  --line: #e5e7eb;
-  --shadow: 0 1px 2px rgba(16, 24, 40, 0.06),
-             0 1px 3px rgba(16, 24, 40, 0.1);
-  --radius: 12px;
+  --accent: #d4b483;
   background: var(--bg);
-  color: var(--text);
-  padding: 24px;
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 16px;
+  padding: 32px 24px;
 }
-.student-sell .card {
+.student-sell .student-sell__card {
+  max-width: 900px;
+  margin: 0 auto;
   background: var(--card);
+  border-radius: 14px;
   border: 1px solid var(--line);
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-  padding: 24px;
+  padding: 20px 22px;
 }
 .student-sell h1 {
   font-size: 24px;
   font-weight: 700;
-  margin-bottom: 8px;
 }
-.student-sell .muted-sub {
+.student-sell .student-sell__sub {
+  margin-top: 4px;
+  font-size: 14px;
   color: var(--muted);
-  font-size: 0.9rem;
-  margin-bottom: 20px;
 }
-.student-sell .form {
+.student-sell .student-sell__form {
+  margin-top: 18px;
   display: grid;
   gap: 16px;
 }
-.student-sell .image-upload {
+.student-sell .student-sell__image-upload {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column;
+  gap: 10px;
 }
-.student-sell .image-upload .preview {
-  width: 120px;
-  height: 120px;
-  border-radius: var(--radius);
+.student-sell .student-sell__preview-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.student-sell .student-sell__preview {
+  width: 110px;
+  height: 110px;
   -o-object-fit: cover;
      object-fit: cover;
-  border: 2px solid #f0ede6;
-  background: #fafafa;
-}
-.student-sell .image-upload .upload-btn {
-  position: relative;
-  padding: 10px 14px;
+  border-radius: 12px;
   border: 1px solid var(--line);
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  color: #57534e;
-  background: #faf8f4;
-  transition: background 0.15s ease;
+  background: #f3f4f6;
 }
-.student-sell .image-upload .upload-btn input {
+.student-sell .student-sell__upload-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  background: #f9fafb;
+}
+.student-sell .student-sell__upload-btn input {
   position: absolute;
   inset: 0;
   opacity: 0;
   cursor: pointer;
 }
-.student-sell .image-upload .upload-btn:hover {
-  background: #f3efea;
+.student-sell .student-sell__upload-btn:hover {
+  background: #f3f4f6;
 }
-.student-sell .grid {
+.student-sell .student-sell__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
 }
-.student-sell .grid .span-2 {
-  grid-column: span 2;
-}
 @media (max-width: 720px) {
-  .student-sell .grid .span-2 {
-    grid-column: span 1;
-  }
-}
-@media (max-width: 720px) {
-  .student-sell .grid {
+  .student-sell .student-sell__grid {
     grid-template-columns: 1fr;
   }
 }
@@ -95,54 +89,71 @@
 }
 .student-sell .field label {
   font-size: 0.9rem;
-  color: #444;
   font-weight: 600;
+  color: #4b5563;
 }
 .student-sell .field input,
 .student-sell .field select,
 .student-sell .field textarea {
-  border: 1px solid var(--line);
   border-radius: 10px;
-  padding: 10px 12px;
+  border: 1px solid var(--line);
+  padding: 9px 11px;
   font-size: 0.95rem;
-  font-family: inherit;
+  outline: none;
 }
 .student-sell .field input:focus,
 .student-sell .field select:focus,
 .student-sell .field textarea:focus {
-  outline: none;
-  border-color: #d4b483;
-  box-shadow: 0 0 0 3px rgba(212, 180, 131, 0.2);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(212, 180, 131, 0.25);
 }
-.student-sell .actions {
+.student-sell .field textarea {
+  resize: vertical;
+}
+.student-sell .field.field--span-2 {
+  grid-column: span 2;
+}
+@media (max-width: 720px) {
+  .student-sell .field.field--span-2 {
+    grid-column: span 1;
+  }
+}
+.student-sell .student-sell__actions {
   display: flex;
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 4px;
 }
-.student-sell .actions .btn {
-  padding: 10px 16px;
+.student-sell .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 16px;
   border-radius: 10px;
-  font-weight: 700;
   border: 1px solid transparent;
+  font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
-  font-size: 0.95rem;
-  transition: background 0.15s ease, color 0.15s ease;
+  text-decoration: none;
 }
-.student-sell .actions .primary {
-  background: #d4b483;
-  color: #000;
+.student-sell .btn.primary {
+  background: var(--accent);
+  color: #111827;
+  border-color: var(--accent);
 }
-.student-sell .actions .primary:hover {
-  background: #c3a26c;
+.student-sell .btn.primary:hover {
+  background: #cba366;
+  border-color: #cba366;
 }
-.student-sell .actions .primary:disabled {
-  opacity: 0.7;
-  cursor: default;
-}
-.student-sell .actions .ghost {
-  background: #fff;
+.student-sell .btn.ghost {
+  background: #ffffff;
+  color: var(--text);
   border-color: var(--line);
 }
-.student-sell .actions .ghost:hover {
-  background: #faf8f4;
-}/*# sourceMappingURL=StudentSell.css.map */
+.student-sell .btn.ghost:hover {
+  background: #f9fafb;
+}
+@media (max-width: 520px) {
+  .student-sell {
+    padding: 20px 12px;
+  }
+}/*# sourceMappingURL=studentsell.css.map */

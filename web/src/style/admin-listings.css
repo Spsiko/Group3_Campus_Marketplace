@@ -227,7 +227,7 @@
 .table {
   border: 1px solid var(--line);
   border-radius: 12px;
-  overflow: hidden;
+  overflow: visible;
 }
 .table .tr {
   display: grid;
@@ -391,6 +391,40 @@
   background: #f9fafb;
 }
 
+/* Actions menu */
+.actions-cell {
+  position: relative;
+}
+
+.actions-menu {
+  position: fixed;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+  min-width: 150px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+}
+.actions-menu button {
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.actions-menu button:hover {
+  background: #f3f4f6;
+}
+.actions-menu button.danger {
+  color: #ef4444;
+}
+.actions-menu button.danger:hover {
+  background: #fef2f2;
+}
+
 /* Responsive */
 @media (max-width: 1100px) {
   .table .tr {
@@ -423,4 +457,88 @@
     gap: 10px;
     align-items: flex-start;
   }
+}
+/* Modal styles for edit listing */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  width: 500px;
+  max-width: calc(100% - 32px);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal h2 {
+  margin: 0;
+  padding: 16px 16px 8px 16px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.modal .field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 16px;
+}
+.modal .field span {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+.modal .field input, .modal .field select {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  color: #111827;
+  border-radius: 12px;
+  padding: 12px;
+  outline: none;
+  font-size: 14px;
+}
+.modal .field input:focus, .modal .field select:focus {
+  border-color: #597fd1;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 16px 16px 16px 16px;
+}
+.modal-actions .btn {
+  border: 1px solid #e5e7eb;
+  background: transparent;
+  color: #111827;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.modal-actions .btn:hover {
+  background: #f3f4f6;
+}
+.modal-actions .btn--primary {
+  background: #597fd1;
+  border-color: #597fd1;
+  color: white;
+}
+.modal-actions .btn--primary:hover {
+  background: #4a6bb8;
+}
+.modal-actions .btn--ghost {
+  background: transparent;
 }/*# sourceMappingURL=admin-listings.css.map */

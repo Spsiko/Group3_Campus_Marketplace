@@ -1,117 +1,114 @@
 .student-product {
-  --bg: #f7f7f8;
-  --card: #fff;
-  --line: #e5e7eb;
-  --text: #111827;
-  --muted: #6b7280;
-  --brand: #d4b483;
-  --brand-hover: #caa469;
-  --shadow: 0 1px 3px rgba(16, 24, 40, 0.08);
-  background: var(--bg);
+  padding: 40px;
+  background: #f9f9f9;
   min-height: 100vh;
-  padding: 40px 24px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  /** Gallery */
+  /** Details */
 }
 .student-product .sp-container {
+  max-width: 1180px;
+  margin: 0 auto;
   display: flex;
-  flex-wrap: wrap;
-  gap: 32px;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-  padding: 24px;
-  max-width: 960px;
-  width: 100%;
+  gap: 40px;
 }
-.student-product .sp-image-wrap {
-  flex: 1 1 45%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.student-product .sp-image-wrap .sp-image {
-  width: 100%;
-  max-height: 420px;
-  -o-object-fit: cover;
-     object-fit: cover;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-}
-.student-product .sp-details {
-  flex: 1 1 50%;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  color: var(--text);
-}
-.student-product .sp-details .sp-title {
-  font-size: 24px;
-  font-weight: 700;
-}
-.student-product .sp-details .sp-category {
-  color: var(--muted);
-  font-size: 14px;
-}
-.student-product .sp-details .sp-condition {
-  font-size: 14px;
-  color: var(--muted);
-}
-.student-product .sp-details .sp-price {
-  color: #047857;
-  font-size: 20px;
-  font-weight: 700;
-  margin: 8px 0;
-}
-.student-product .sp-details .sp-meta {
-  display: flex;
-  flex-direction: column;
-  font-size: 14px;
-  color: var(--muted);
-}
-.student-product .sp-details .sp-meta .sp-date {
-  font-size: 13px;
-}
-.student-product .sp-details .sp-desc {
-  margin-top: 8px;
-  line-height: 1.5;
-  color: var(--text);
-}
-.student-product .sp-details .sp-btn {
-  margin-top: 18px;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 15px;
-  background: var(--brand);
-  color: #111;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-.student-product .sp-details .sp-btn:hover {
-  background: var(--brand-hover);
-}
-.student-product .student-product__notfound {
-  padding: 80px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 18px;
-}
-@media (max-width: 820px) {
-  .student-product {
-    padding: 24px;
-  }
+@media (max-width: 840px) {
   .student-product .sp-container {
     flex-direction: column;
-    padding: 20px;
   }
-  .student-product .sp-image-wrap {
-    flex: 1 1 100%;
-  }
-  .student-product .sp-details {
-    flex: 1 1 100%;
-  }
-}/*# sourceMappingURL=StudentProduct.css.map */
+}
+.student-product .sp-gallery {
+  flex: 1;
+  display: grid;
+  gap: 12px;
+}
+.student-product .sp-main-img {
+  width: 100%;
+  border-radius: 12px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  max-height: 420px;
+}
+.student-product .sp-thumb-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+}
+.student-product .sp-thumb {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+.student-product .sp-thumb.active {
+  border-color: #d4b483;
+}
+.student-product .sp-details {
+  flex: 1;
+  display: grid;
+  gap: 16px;
+}
+.student-product .sp-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+.student-product .sp-price {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #14532d;
+}
+.student-product .sp-badges {
+  display: flex;
+  gap: 8px;
+}
+.student-product .sp-badge {
+  background: #e7e5e4;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.student-product .sp-desc {
+  color: #444;
+  line-height: 1.5;
+}
+.student-product .sp-meta {
+  background: #fafafa;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #e6e6e6;
+}
+.student-product .sp-meta p {
+  margin: 4px 0;
+}
+.student-product .sp-warning {
+  color: #b91c1c;
+  font-weight: 600;
+}
+.student-product .sp-actions {
+  display: flex;
+  gap: 12px;
+}
+.student-product .sp-actions .btn {
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+}
+.student-product .sp-actions .primary {
+  background: #d4b483;
+}
+.student-product .sp-actions .primary:hover {
+  background: #c6a06f;
+}
+.student-product .sp-actions .ghost {
+  background: white;
+  border: 1px solid #ddd;
+}
+.student-product .sp-actions .ghost:hover {
+  background: #f5f5f5;
+}/*# sourceMappingURL=studentproduct.css.map */

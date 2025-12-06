@@ -1,0 +1,87 @@
+.notification-wrapper {
+  position: relative;
+}
+
+.notification-bell {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  padding: 6px;
+}
+.notification-bell:hover {
+  opacity: 0.8;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -6px;
+  right: -4px;
+  background: #d4b483;
+  color: #111;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 50%;
+  padding: 2px 6px;
+  line-height: 1;
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  width: 280px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  z-index: 50;
+  overflow: hidden;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #f9f9f9;
+  font-weight: 600;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.mark-read-btn {
+  background: none;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+  color: #6b7280;
+}
+.mark-read-btn:hover {
+  color: #111;
+}
+
+.notification-list {
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+.notification-item.unread {
+  background: #fff7ea;
+  border-left: 3px solid #d4b483;
+}
+.notification-item p {
+  margin: 0;
+}
+.notification-item .notification-time {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.notification-empty {
+  padding: 20px;
+  text-align: center;
+  color: #6b7280;
+}/*# sourceMappingURL=NotificationBell.css.map */

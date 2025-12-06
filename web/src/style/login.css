@@ -112,6 +112,7 @@ form .login-btn:hover {
   border: 1px solid #ddd;
   border-radius: 8px;
   background: #fff;
+  color: #000;
   font-weight: 500;
   cursor: pointer;
   transition: 0.2s;
@@ -149,4 +150,38 @@ form .login-btn:hover {
 .forgot-password-link:hover {
   color: #a5854d;
   text-decoration: underline;
-}/*# sourceMappingURL=Login.css.map */
+}
+
+.password-input-container {
+  position: relative;
+  width: 100%;
+}
+.password-input-container input {
+  width: 100%;
+  padding-right: 3rem;
+  box-sizing: border-box;
+}
+.password-input-container .password-toggle-btn {
+  position: absolute;
+  right: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 0.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: 0.2s;
+}
+.password-input-container .password-toggle-btn:hover {
+  color: #333;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.password-input-container .password-toggle-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(212, 180, 131, 0.3);
+}/*# sourceMappingURL=login.css.map */

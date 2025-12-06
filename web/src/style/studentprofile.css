@@ -184,4 +184,25 @@
 }
 .student-profile .settings .setting-section .setting-row .btn.danger:hover {
   background: #dc2626;
-}/*# sourceMappingURL=StudentProfile.css.map */
+}
+
+.tabs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.logout-btn {
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.logout-btn:hover {
+  background: #f5f5f5;
+}/*# sourceMappingURL=studentprofile.css.map */

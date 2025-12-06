@@ -1,0 +1,225 @@
+.listings-page {
+  background-color: #f7f5f0;
+  min-height: 100vh;
+  padding: 2rem 3rem;
+  font-family: "Inter", sans-serif;
+  color: #333;
+}
+.listings-page__layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 2rem;
+  align-items: flex-start;
+}
+.listings-page__sidebar {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem 1.25rem;
+  top: 1.5rem;
+}
+.listings-page__sidebar-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+}
+.listings-page__filter-group {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #eee3d5;
+  padding-bottom: 1.2rem;
+}
+.listings-page__filter-group:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+.listings-page__filter-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #444;
+}
+.listings-page__search-input {
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid #ddd0c2;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.listings-page__search-input:focus {
+  border-color: #d4b483;
+  box-shadow: 0 0 0 2px rgba(212, 180, 131, 0.3);
+}
+.listings-page__filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.3rem;
+}
+.listings-page__radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.listings-page__radio-option input {
+  accent-color: #d4b483;
+  cursor: pointer;
+}
+.listings-page__radio-option span {
+  cursor: pointer;
+}
+.listings-page__price-range {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+}
+.listings-page__price-input {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #ddd0c2;
+  font-size: 0.85rem;
+  outline: none;
+  box-sizing: border-box;
+}
+.listings-page__price-input:focus {
+  border-color: #d4b483;
+  box-shadow: 0 0 0 2px rgba(212, 180, 131, 0.25);
+}
+.listings-page__price-separator {
+  font-size: 0.85rem;
+  color: #777;
+}
+.listings-page__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.listings-page__toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #e3dccf;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.listings-page__results-count {
+  font-size: 0.9rem;
+  color: #666;
+}
+.listings-page__sort {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.listings-page__sort-label {
+  font-size: 0.85rem;
+  color: #555;
+}
+.listings-page__sort-select {
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #d3c7b8;
+  font-size: 0.85rem;
+  background-color: #fff;
+  cursor: pointer;
+}
+.listings-page__sort-select:focus {
+  border-color: #d4b483;
+  box-shadow: 0 0 0 2px rgba(212, 180, 131, 0.25);
+  outline: none;
+}
+.listings-page__empty-state {
+  padding: 2rem 1rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #777;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
+}
+@media (max-width: 900px) {
+  .listings-page__layout {
+    grid-template-columns: 1fr;
+  }
+  .listings-page__sidebar {
+    position: static;
+    order: -1;
+  }
+  .listings-page__toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+@media (max-width: 600px) {
+  .listings-page {
+    padding: 1.25rem 1rem;
+  }
+}
+
+/* You can also style the listing grid + cards here if you want */
+/* Example: tweak card grid on this page if needed */
+.listing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+/* Example: base card style (if you haven't styled it elsewhere yet) */
+.listing-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  cursor: pointer;
+}
+.listing-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+}
+.listing-card__image-wrapper {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+}
+.listing-card__image {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  display: block;
+}
+.listing-card__body {
+  padding: 0.75rem 0.9rem 1rem;
+}
+.listing-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+.listing-card__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+}
+.listing-card__price {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #2e3b1f;
+}
+.listing-card__category {
+  font-size: 0.8rem;
+  color: #777;
+  text-transform: capitalize;
+  margin-top: 0.2rem;
+}/*# sourceMappingURL=listings.css.map */
