@@ -32,7 +32,9 @@ import StudentCheckout from "../pages/student/StudentCheckout"
 import CheckoutSuccess from "../pages/student/CheckoutSuccess";
 import Orders from "../pages/student/StudentOrders";
 import StudentChat from "../pages/student/StudentChat";
-import Seller from "../pages/student/Seller";
+import SellerOrders from "../pages/student/SellerOrders";
+import MyListings from "../pages/student/MyListings";
+import EditListings from "../pages/student/EditListings";
 
 export default function AppRoutes() {
   return (
@@ -74,7 +76,9 @@ export default function AppRoutes() {
           <Route path="checkout" element={<StudentCheckout />} />
           <Route path="checkoutsuccess" element={<CheckoutSuccess />} />
           <Route path="orders" element={<Orders />} />
-          <Route path="Seller" element={<Seller />} />
+          <Route path="SellerOrders" element={<SellerOrders />} />
+          <Route path="mylistings" element={<MyListings />} />
+          <Route path="editlistings/:id" element={<EditListings />} />
           <Route path="*" element={<div style={{ padding: 20 }}>Not Found</div>} />
         </Route>
       

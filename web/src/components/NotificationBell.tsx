@@ -1,3 +1,5 @@
+// src/components/NotificationBell.tsx
+
 import { useEffect, useState, useRef } from "react";
 import { Bell } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
@@ -9,49 +11,59 @@ export default function NotificationBell() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const bellRef = useRef<HTMLDivElement>(null);
 
-  const user = getUser();
-  const userId = user?.id; // auth.ts stores DB user.id here
+  const authUser = getUser();
+  const userId = authUser?.id;
 
   // -------------------------------------------------------
-  // 1. FETCH NOTIFICATIONS
+  // Fetch notifications
   // -------------------------------------------------------
   async function fetchNotifications() {
     if (!userId) return;
 
     const { data, error } = await supabase
-      .from("student_notifications")
+      .from("notifications")
       .select("*")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
-    if (!error && data) {
-      setNotifications(data);
+    if (error) {
+      console.error("Error fetching notifications:", error);
+      return;
     }
+
+    setNotifications(data || []);
   }
 
   // -------------------------------------------------------
-  // 2. REALTIME SUBSCRIPTION (LISTEN FOR NEW NOTIFICATIONS)
+  // Realtime subscription
   // -------------------------------------------------------
   useEffect(() => {
     if (!userId) return;
 
-    fetchNotifications(); // initial load
+    fetchNotifications();
 
     const channel = supabase
-      .channel("student-notif-realtime")
+      .channel("notifications-realtime")
       .on(
         "postgres_changes",
         {
-          event: "INSERT",
+          event: "*", // catch INSERT + UPDATE
           schema: "public",
-          table: "student_notifications",
-          filter: `user_id=eq.${userId}`,
+          table: "notifications",
         },
         (payload) => {
-          setNotifications((prev) => [payload.new, ...prev]);
+          const newRow = payload.new as any;
+          if (!newRow) return;
+
+          // Only show notifications belonging to this user
+          if (newRow.user_id === userId) {
+            setNotifications((prev) => [newRow, ...prev]);
+          }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log("Realtime status:", status);
+      });
 
     return () => {
       supabase.removeChannel(channel);
@@ -59,7 +71,7 @@ export default function NotificationBell() {
   }, [userId]);
 
   // -------------------------------------------------------
-  // 3. CLICK OUTSIDE → CLOSE DROPDOWN
+  // Close dropdown when clicking outside
   // -------------------------------------------------------
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -72,32 +84,34 @@ export default function NotificationBell() {
   }, []);
 
   // -------------------------------------------------------
-  // 4. UNREAD COUNT
+  // Unread count
   // -------------------------------------------------------
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadCount = notifications.filter((n) => n.status === "active").length;
 
   // -------------------------------------------------------
-  // 5. MARK ALL READ
+  // Mark notifications as read
   // -------------------------------------------------------
   async function markAllRead() {
     if (!userId) return;
 
-    await supabase
-      .from("student_notifications")
-      .update({ read: true })
+    const { error } = await supabase
+      .from("notifications")
+      .update({ status: "inactive" })
       .eq("user_id", userId)
-      .eq("read", false);
+      .eq("status", "active");
+
+    if (error) {
+      console.error("Failed to mark notifications read:", error);
+      return;
+    }
 
     fetchNotifications();
   }
 
-  // -------------------------------------------------------
-  // 6. UI
-  // -------------------------------------------------------
   return (
     <div className="notification-wrapper" ref={bellRef}>
       <button className="notification-bell" onClick={() => setOpen(!open)}>
-        <Bell size={22} color="#1f2937" />
+        <Bell size={22} />
         {unreadCount > 0 && (
           <span className="notification-badge">{unreadCount}</span>
         )}
@@ -122,10 +136,11 @@ export default function NotificationBell() {
             {notifications.map((n) => (
               <div
                 key={n.id}
-                className={`notification-item ${!n.read ? "unread" : ""}`}
+                className={`notification-item ${
+                  n.status === "active" ? "unread" : ""
+                }`}
               >
-                <strong>{n.title}</strong>
-                <p>{n.message}</p>
+                <p>{n.action}</p>
                 <span className="notification-time">
                   {new Date(n.created_at).toLocaleString()}
                 </span>

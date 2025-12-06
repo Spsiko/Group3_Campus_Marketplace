@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabaseClient";
 import { getResolvedUserSync } from "../../lib/resolvedUser";
-import "../../style/StudentMessages.scss";
+import "../../style/studentmessages.scss";
 
 // Same shape as `messages` table
 type ChatMessage = {

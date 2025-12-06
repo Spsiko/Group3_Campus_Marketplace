@@ -1,0 +1,132 @@
+.seller-orders-page {
+    padding: 20px;
+    max-width: 950px;
+    margin: 0 auto;
+  
+    h2 {
+      font-size: 26px;
+      margin-bottom: 20px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+  
+    .orders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+  
+    .order-card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 18px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0px 2px 4px rgba(0,0,0,0.04);
+      transition: box-shadow 0.2s ease;
+  
+      &:hover {
+        box-shadow: 0px 4px 8px rgba(0,0,0,0.08);
+      }
+  
+      .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+  
+        h3 {
+          font-size: 20px;
+          font-weight: 600;
+          margin: 0;
+          color: #111827;
+        }
+      }
+  
+      .status-badge {
+        padding: 4px 10px;
+        font-size: 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        text-transform: capitalize;
+  
+        &.sold,
+        &.sold-out {
+          background: #fee2e2;
+          color: #b91c1c;
+        }
+  
+        &.available {
+          background: #dcfce7;
+          color: #166534;
+        }
+  
+        &.pending {
+          background: #fef9c3;
+          color: #854d0e;
+        }
+  
+        &.hidden {
+          background: #e5e7eb;
+          color: #4b5563;
+        }
+      }
+  
+      .order-meta {
+        margin-top: 12px;
+        font-size: 14px;
+        color: #4b5563;
+        line-height: 20px;
+  
+        p {
+          margin: 4px 0;
+        }
+  
+        strong {
+          color: #111827;
+        }
+      }
+  
+      .order-items {
+        margin-top: 15px;
+        padding: 10px 12px;
+        background: #f9fafb;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+  
+        strong {
+          font-size: 15px;
+          display: block;
+          margin-bottom: 6px;
+          color: #111827;
+        }
+  
+        p {
+          margin: 2px 0;
+          font-size: 14px;
+          color: #374151;
+        }
+      }
+  
+      .order-total {
+        margin-top: 14px;
+        font-size: 15px;
+        font-weight: 600;
+        color: #1f2937;
+  
+        strong {
+          color: #111827;
+        }
+      }
+    }
+  }
+  
+  /* Responsive */
+  @media (max-width: 600px) {
+    .seller-orders-page {
+      padding: 12px;
+  
+      .order-card {
+        padding: 15px;
+      }
+    }
+  }
+  

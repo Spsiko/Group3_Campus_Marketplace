@@ -1,0 +1,155 @@
+.edit-listing-page {
+    max-width: 640px;
+    margin: 40px auto;
+    padding: 0 20px;
+  
+    .card {
+      background: #ffffff;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+  
+      h2 {
+        margin-bottom: 20px;
+        font-size: 1.6rem;
+        font-weight: 600;
+        text-align: center;
+      }
+  
+      .preview {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 16px;
+        border: 1px solid #e5e7eb;
+      }
+  
+      h3 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+  
+      p {
+        margin: 6px 0;
+        font-size: 0.95rem;
+  
+        strong {
+          font-weight: 600;
+        }
+      }
+  
+      .note {
+        margin-top: 15px;
+        padding: 12px;
+        font-size: 0.9rem;
+        color: #b91c1c;
+        background: #fee2e2;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        text-align: center;
+        width: 100%;
+      }
+  
+      label {
+        margin-top: 20px;
+        display: block;
+        width: 100%;
+        font-weight: 600;
+      }
+  
+      input[type="number"] {
+        margin-top: 6px;
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 1rem;
+  
+        &:focus {
+          border-color: #2563eb;
+          outline: none;
+          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+        }
+      }
+  
+      .actions {
+        display: flex;
+        gap: 12px;
+        width: 100%;
+        margin-top: 20px;
+  
+        .btn {
+          flex: 1;
+          padding: 10px 16px;
+          border-radius: 8px;
+          font-size: 1rem;
+        }
+  
+        .primary {
+          background: #d4b483;
+          color: white;
+          border: none;
+  
+          &:hover {
+            background: #cba366
+          }
+        }
+  
+        .ghost {
+          background: #f3f4f6;
+          color: #374151;
+          border: 1px solid #d1d5db;
+  
+          &:hover {
+            background: #e5e7eb;
+          }
+        }
+      }
+  
+      .delete-btn {
+        margin-top: 16px;
+        width: 100%;
+        padding: 10px 16px;
+        background: black;
+        color: white;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+  
+        &:hover {
+          background: #b91c1c;
+        }
+      }
+    }
+  }
+  
+  /* RESPONSIVE */
+  @media (max-width: 480px) {
+    .edit-listing-page {
+      .card {
+        padding: 18px;
+  
+        .preview {
+          width: 160px;
+          height: 160px;
+        }
+  
+        .actions {
+          flex-direction: column;
+  
+          .btn {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+  
