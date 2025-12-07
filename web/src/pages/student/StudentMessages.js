@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabaseClient";
 import { getResolvedUserSync } from "../../lib/resolvedUser";
-import "../../style/StudentMessages.scss";
+import "../../style/studentmessages.scss";
 export default function StudentMessages() {
     const current = getResolvedUserSync();
     const myId = current?.auth_user_id || "";
