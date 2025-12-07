@@ -87,6 +87,7 @@ export default function ManageListings() {
     const [query, setQuery] = useState("");
     const [statusTab, setStatusTab] = useState("all");
     const [category, setCategory] = useState("All");
+    const [statusFilter, setStatusFilter] = useState("All");
     // rows for current page
     const [rows, setRows] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -108,7 +109,7 @@ export default function ManageListings() {
     // Reset page when filters/search change
     useEffect(() => {
         setPage(0);
-    }, [statusTab, category, query]);
+    }, [statusTab, category, statusFilter, query]);
     // Close actions menu when clicking outside
     useEffect(() => {
         function handleClickOutside(event) {
@@ -164,6 +165,8 @@ export default function ManageListings() {
                 .order("created_at", { ascending: false });
             if (statusTab !== "all")
                 q = q.eq("status", statusTab.toLowerCase());
+            if (statusFilter !== "All")
+                q = q.eq("status", statusFilter.toLowerCase());
             if (category !== "All")
                 q = q.eq("category", category);
             const qstr = query.trim();
@@ -228,7 +231,7 @@ export default function ManageListings() {
             setLoading(false);
         }
         loadPage();
-    }, [statusTab, category, query, page, refreshToken]);
+    }, [statusTab, category, statusFilter, query, page, refreshToken]);
     const start = totalMatching === 0 ? 0 : page * PAGE_SIZE + 1;
     const end = Math.min((page + 1) * PAGE_SIZE, totalMatching);
     const totalPages = Math.max(1, Math.ceil(totalMatching / PAGE_SIZE));
@@ -317,50 +320,42 @@ export default function ManageListings() {
             alert('You must be logged in to delete listings.');
             return;
         }
-
         // Check if user has admin privileges
         const userData = localStorage.getItem('cm_user');
         if (!userData) {
             alert('Session expired. Please log in again.');
             return;
         }
-
         const parsedUser = JSON.parse(userData);
         if (parsedUser.role !== 'admin') {
             alert('Only administrators can delete listings.');
             return;
         }
-
         // First try to read the listing to make sure it exists
         const { data: existingListing, error: readError } = await supabase
             .from('listings')
             .select('id, title')
             .eq('id', id)
             .single();
-
         if (readError) {
             console.error('Error reading listing:', readError);
             alert(`Error accessing listing: ${readError.message}`);
             return;
         }
-
         if (!existingListing) {
             alert('Listing not found.');
             return;
         }
-
         const ok = window.confirm("Are you sure you want to delete this listing? This cannot be undone.");
-        if (!ok) return;
-
+        if (!ok)
+            return;
         // Try delete operation
         const { error } = await supabase.from("listings").delete().eq("id", id);
-
         if (error) {
             console.error('Supabase delete error:', error);
             alert(`Error deleting listing: ${error.message}`);
             return;
         }
-
         // Update local state
         setRows((prev) => prev.filter((r) => r.id !== id));
         setTotalMatching((prev) => Math.max(0, prev - 1));
@@ -388,7 +383,7 @@ export default function ManageListings() {
         // reload data so the new row appears
         setRefreshToken((t) => t + 1);
     }
-    return (_jsxs("div", { className: "admin-listings", children: [_jsx("h1", { className: "page-title", children: "Listings" }), _jsxs("section", { className: "kpi-grid", children: [_jsxs("div", { className: "kpi-card", children: [_jsx("div", { className: "kpi-head", children: "Total Listings" }), _jsx("div", { className: "kpi-num", children: kpi.total }), _jsx("div", { className: "kpi-sub", children: "Overall" })] }), _jsxs("div", { className: "kpi-card", children: [_jsx("div", { className: "kpi-head", children: "Active Listings" }), _jsx("div", { className: "kpi-num", children: kpi.active }), _jsx("div", { className: "kpi-sub", children: "Active total count" })] }), _jsxs("div", { className: "kpi-card", children: [_jsx("div", { className: "kpi-head", children: "Pending Review" }), _jsx("div", { className: "kpi-num", children: kpi.pending }), _jsx("div", { className: "kpi-sub", children: "Require approval" })] }), _jsxs("div", { className: "kpi-card", children: [_jsx("div", { className: "kpi-head", children: "Total Value" }), _jsxs("div", { className: "kpi-num", children: ["$", kpi.value] }), _jsx("div", { className: "kpi-sub", children: "Sold items" })] })] }), _jsxs("section", { className: "block", children: [_jsxs("div", { className: "block-head", children: [_jsxs("div", { children: [_jsx("div", { className: "block-title", children: "Manage Listings" }), _jsx("div", { className: "block-sub", children: "Review and manage all marketplace listings" })] }), _jsx("button", { className: "btn btn--ghost", onClick: () => exportCsv(rows), children: "\u2913 Export" })] }), _jsx("div", { className: "tabs", children: TABS.map((t) => (_jsx("button", { className: `tab ${statusTab === t.key ? "is-active" : ""}`, onClick: () => setStatusTab(t.key), children: t.label }, t.key))) }), _jsxs("div", { className: "filters", children: [_jsxs("div", { className: "search", children: [_jsx("span", { className: "search-icon" }), _jsx("input", { value: query, onChange: (e) => setQuery(e.target.value), placeholder: "Search by title, description, or seller..." })] }), _jsxs("div", { className: "filter", children: [_jsxs("button", { className: "filter-btn", children: [_jsx("span", { className: "filter-icon" }), category === "All" ? "All Categories" : category, _jsx("span", { className: "caret" })] }), _jsx("div", { className: "filter-menu", children: ["All", "Books", "Electronics", "Furniture", "Clothing", "Other"].map((c) => (_jsx("div", { className: "filter-item", onClick: () => setCategory(c), children: c }, c))) })] }), _jsx("div", { className: "filter disabled", children: _jsxs("button", { className: "filter-btn", children: [_jsx("span", { className: "filter-icon" }), "All Status", _jsx("span", { className: "caret" })] }) })] }), _jsxs("div", { className: "table", children: [_jsxs("div", { className: "tr th", children: [_jsxs("div", { className: "td chk", children: [_jsx("input", { type: "checkbox" }), _jsx("span", { children: "Listing" })] }), _jsx("div", { className: "td seller", children: "Seller" }), _jsx("div", { className: "td category", children: "Category" }), _jsx("div", { className: "td price", children: "Price" }), _jsx("div", { className: "td status", children: "Status" }), _jsx("div", { className: "td views", children: "Views" }), _jsx("div", { className: "td actions", children: "Actions" })] }), err && (_jsx("div", { className: "tr", children: _jsxs("div", { className: "td", style: { gridColumn: "1 / -1", color: "#b91c1c" }, children: ["Error: ", err] }) })), loading && !err && (_jsx("div", { className: "tr", children: _jsx("div", { className: "td", style: { gridColumn: "1 / -1" }, children: "Loading\u2026" }) })), !loading && !err && rows.length === 0 && (_jsx("div", { className: "tr", children: _jsx("div", { className: "td", style: { gridColumn: "1 / -1" }, children: "No listings found." }) })), rows.map((l) => (_jsxs("div", { className: "tr", children: [_jsxs("div", { className: "td chk", children: [_jsx("input", { type: "checkbox" }), l.thumb ? (_jsx("div", { className: "thumb", style: {
+    return (_jsxs("div", { className: "admin-listings", children: [_jsx("h1", { className: "page-title", children: "Listings" }), _jsxs("section", { className: "kpi-grid", children: [_jsxs("div", { className: "kpi-card", children: [_jsx("div", { className: "kpi-head", children: "Total Listings" }), _jsx("div", { className: "kpi-num", children: kpi.total }), _jsx("div", { className: "kpi-sub", children: "Overall" })] }), _jsxs("div", { className: "kpi-card", children: [_jsx("div", { className: "kpi-head", children: "Active Listings" }), _jsx("div", { className: "kpi-num", children: kpi.active }), _jsx("div", { className: "kpi-sub", children: "Active total count" })] }), _jsxs("div", { className: "kpi-card", children: [_jsx("div", { className: "kpi-head", children: "Pending Review" }), _jsx("div", { className: "kpi-num", children: kpi.pending }), _jsx("div", { className: "kpi-sub", children: "Require approval" })] }), _jsxs("div", { className: "kpi-card", children: [_jsx("div", { className: "kpi-head", children: "Total Value" }), _jsxs("div", { className: "kpi-num", children: ["$", kpi.value] }), _jsx("div", { className: "kpi-sub", children: "Sold items" })] })] }), _jsxs("section", { className: "block", children: [_jsxs("div", { className: "block-head", children: [_jsxs("div", { children: [_jsx("div", { className: "block-title", children: "Manage Listings" }), _jsx("div", { className: "block-sub", children: "Review and manage all marketplace listings" })] }), _jsx("button", { className: "btn btn--ghost", onClick: () => exportCsv(rows), children: "\u2913 Export" })] }), _jsx("div", { className: "tabs", children: TABS.map((t) => (_jsx("button", { className: `tab ${statusTab === t.key ? "is-active" : ""}`, onClick: () => setStatusTab(t.key), children: t.label }, t.key))) }), _jsxs("div", { className: "filters", children: [_jsxs("div", { className: "search", children: [_jsx("span", { className: "search-icon" }), _jsx("input", { value: query, onChange: (e) => setQuery(e.target.value), placeholder: "Search by title, description, or seller..." })] }), _jsxs("div", { className: "filter", children: [_jsxs("button", { className: "filter-btn", children: [_jsx("span", { className: "filter-icon" }), category === "All" ? "All Categories" : category, _jsx("span", { className: "caret" })] }), _jsx("div", { className: "filter-menu", children: ["All", "Books", "Electronics", "Furniture", "Clothing", "Other"].map((c) => (_jsx("div", { className: "filter-item", onClick: () => setCategory(c), children: c }, c))) })] }), _jsxs("div", { className: "filter", children: [_jsxs("button", { className: "filter-btn", children: [_jsx("span", { className: "filter-icon" }), statusFilter === "All" ? "All Status" : statusFilter, _jsx("span", { className: "caret" })] }), _jsx("div", { className: "filter-menu", children: ["All", "Active", "Pending", "Sold", "Rejected"].map((s) => (_jsx("div", { className: "filter-item", onClick: () => setStatusFilter(s), children: s }, s))) })] })] }), _jsxs("div", { className: "table", children: [_jsxs("div", { className: "tr th", children: [_jsxs("div", { className: "td chk", children: [_jsx("input", { type: "checkbox" }), _jsx("span", { children: "Listing" })] }), _jsx("div", { className: "td seller", children: "Seller" }), _jsx("div", { className: "td category", children: "Category" }), _jsx("div", { className: "td price", children: "Price" }), _jsx("div", { className: "td status", children: "Status" }), _jsx("div", { className: "td views", children: "Views" }), _jsx("div", { className: "td actions", children: "Actions" })] }), err && (_jsx("div", { className: "tr", children: _jsxs("div", { className: "td", style: { gridColumn: "1 / -1", color: "#b91c1c" }, children: ["Error: ", err] }) })), loading && !err && (_jsx("div", { className: "tr", children: _jsx("div", { className: "td", style: { gridColumn: "1 / -1" }, children: "Loading\u2026" }) })), !loading && !err && rows.length === 0 && (_jsx("div", { className: "tr", children: _jsx("div", { className: "td", style: { gridColumn: "1 / -1" }, children: "No listings found." }) })), rows.map((l) => (_jsxs("div", { className: "tr", children: [_jsxs("div", { className: "td chk", children: [_jsx("input", { type: "checkbox" }), l.thumb ? (_jsx("div", { className: "thumb", style: {
                                                     backgroundImage: `url(${l.thumb})`,
                                                     backgroundSize: "cover",
                                                     backgroundPosition: "center",
@@ -418,20 +413,32 @@ export default function ManageListings() {
                                                                 setMenuPosition(null);
                                                                 handleDuplicate(l);
                                                             }, children: "Create copy" }), _jsx("button", { className: "danger", onClick: () => {
+                                                                console.log('Delete button clicked for listing:', l.id);
                                                                 setActionMenuOpenId(null);
                                                                 setMenuPosition(null);
                                                                 handleDelete(l.id);
                                                             }, children: "Delete" })] }))] }) })] }, l.id))), _jsxs("div", { className: "tfoot", children: [_jsx("div", { children: totalMatching === 0
                                             ? "Showing 0 of 0 listings"
-                                            : `Showing ${start}–${end} of ${totalMatching} listings` }), _jsxs("div", { className: "pager", children: [_jsx("button", { className: "btn btn--ghost", onClick: () => setPage((p) => Math.max(0, p - 1)), disabled: page === 0 || loading, children: "Previous" }), _jsx("button", { className: "btn btn--ghost", onClick: () => setPage((p) => Math.min(totalPages - 1, p + 1)), disabled: page + 1 >= totalPages || loading, children: "Next" })] })] })] })] }), editForm && (_jsx("div", { className: "modal-backdrop", children: _jsxs("div", { className: "modal", children: [_jsx("h2", { children: "Edit listing" }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Title" }), _jsx("input", { value: editForm.title, onChange: (e) => setEditForm((f) => f ? { ...f, title: e.target.value } : f) })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Price" }), _jsx("input", { type: "number", min: "0", value: editForm.price, onChange: (e) => setEditForm((f) => f ? { ...f, price: e.target.value } : f) })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Category" }), _jsxs("select", { value: editForm.category, onChange: (e) => setEditForm((f) => f ? { ...f, category: e.target.value } : f), children: [_jsx("option", { value: "Books", children: "Books" }), _jsx("option", { value: "Electronics", children: "Electronics" }), _jsx("option", { value: "Furniture", children: "Furniture" }), _jsx("option", { value: "Clothing", children: "Clothing" }), _jsx("option", { value: "Other", children: "Other" })] })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Status" }), _jsxs("select", { value: editForm.status, onChange: (e) => setEditForm((f) => f
+                                            : `Showing ${start}–${end} of ${totalMatching} listings` }), _jsxs("div", { className: "pager", children: [_jsx("button", { className: "btn btn--ghost", onClick: () => setPage((p) => Math.max(0, p - 1)), disabled: page === 0 || loading, children: "Previous" }), _jsx("button", { className: "btn btn--ghost", onClick: () => setPage((p) => Math.min(totalPages - 1, p + 1)), disabled: page + 1 >= totalPages || loading, children: "Next" })] })] })] })] }), editForm && (_jsx("div", { className: "modal-backdrop", children: _jsxs("div", { className: "modal", children: [_jsxs("div", { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 16px 8px 16px' }, children: [_jsx("h2", { style: { margin: 0 }, children: "Edit Listing" }), _jsx("button", { onClick: () => setEditForm(null), style: {
+                                        background: 'none',
+                                        border: '1px solid #e5e7eb',
+                                        borderRadius: '8px',
+                                        width: '32px',
+                                        height: '32px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        color: '#6b7280'
+                                    }, "aria-label": "Close modal", children: "\u00D7" })] }), _jsxs("div", { className: "field", children: [_jsx("span", { children: "Title" }), _jsx("input", { type: "text", value: editForm.title, onChange: (e) => setEditForm((f) => f ? { ...f, title: e.target.value } : f), placeholder: "Enter listing title" })] }), _jsxs("div", { className: "field", children: [_jsx("span", { children: "Price ($)" }), _jsx("input", { type: "number", min: "0", step: "0.01", value: editForm.price, onChange: (e) => setEditForm((f) => f ? { ...f, price: e.target.value } : f), placeholder: "0.00" })] }), _jsxs("div", { className: "field", children: [_jsx("span", { children: "Category" }), _jsxs("select", { value: editForm.category, onChange: (e) => setEditForm((f) => f ? { ...f, category: e.target.value } : f), children: [_jsx("option", { value: "Books", children: "Books" }), _jsx("option", { value: "Electronics", children: "Electronics" }), _jsx("option", { value: "Furniture", children: "Furniture" }), _jsx("option", { value: "Clothing", children: "Clothing" }), _jsx("option", { value: "Other", children: "Other" })] })] }), _jsxs("div", { className: "field", children: [_jsx("span", { children: "Status" }), _jsxs("select", { value: editForm.status, onChange: (e) => setEditForm((f) => f
                                         ? {
                                             ...f,
                                             status: e.target.value,
                                         }
-                                        : f), children: [_jsx("option", { value: "Active", children: "Active" }), _jsx("option", { value: "Pending", children: "Pending" }), _jsx("option", { value: "Sold", children: "Sold" }), _jsx("option", { value: "Rejected", children: "Rejected" })] })] }), _jsxs("label", { className: "field", children: [_jsx("span", { children: "Condition" }), _jsxs("select", { value: editForm.condition, onChange: (e) => setEditForm((f) => f
+                                        : f), children: [_jsx("option", { value: "Active", children: "Active" }), _jsx("option", { value: "Pending", children: "Pending" }), _jsx("option", { value: "Sold", children: "Sold" }), _jsx("option", { value: "Rejected", children: "Rejected" })] })] }), _jsxs("div", { className: "field", children: [_jsx("span", { children: "Condition" }), _jsxs("select", { value: editForm.condition, onChange: (e) => setEditForm((f) => f
                                         ? {
                                             ...f,
                                             condition: e.target.value,
                                         }
-                                        : f), children: [_jsx("option", { value: "Like New", children: "Like New" }), _jsx("option", { value: "Good", children: "Good" }), _jsx("option", { value: "Used", children: "Used" })] })] }), _jsxs("div", { className: "modal-actions", children: [_jsx("button", { className: "btn btn--ghost", onClick: () => setEditForm(null), disabled: saving, children: "Cancel" }), _jsx("button", { className: "btn", onClick: handleSaveEdit, disabled: saving, children: "Save changes" })] })] }) }))] }));
+                                        : f), children: [_jsx("option", { value: "Like New", children: "Like New" }), _jsx("option", { value: "Good", children: "Good" }), _jsx("option", { value: "Used", children: "Used" })] })] }), _jsxs("div", { className: "modal-actions", children: [_jsx("button", { className: "btn btn--ghost", onClick: () => setEditForm(null), disabled: saving, children: "Cancel" }), _jsx("button", { className: "btn btn--primary", onClick: handleSaveEdit, disabled: saving, children: saving ? "Saving..." : "Save Changes" })] })] }) }))] }));
 }

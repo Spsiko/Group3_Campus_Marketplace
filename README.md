@@ -26,20 +26,20 @@ Group3_Campus_Marketplace/
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
+git clone <your-repo-url>
    cd Group3_Campus_Marketplace
-   ```
+```
 
 2. **Install dependencies**
    ```bash
    # Backend dependencies
-   cd api
-   npm install
+cd api
+npm install
 
    # Frontend dependencies
-   cd ../web
-   npm install
-   ```
+cd ../web
+npm install
+```
 
 3. **Environment Setup**
    ```bash
@@ -53,12 +53,12 @@ Group3_Campus_Marketplace/
 4. **Run the applications**
    ```bash
    # Terminal 1 - Backend
-   cd api
-   npm run dev
+cd api
+npm run dev
 
    # Terminal 2 - Frontend
-   cd web
-   npm run dev
+cd web
+npm run dev
    ```
 
 5. **Access the application**

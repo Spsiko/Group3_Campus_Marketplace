@@ -258,15 +258,15 @@ export default function Login() {
 
           <label>Password *</label>
           <div className="password-input-container">
-            <input
-              data-testid="login-password"
+          <input
+            data-testid="login-password"
               type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              required
-            />
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+            required
+          />
             <button
               type="button"
               className="password-toggle-btn"
@@ -296,17 +296,17 @@ export default function Login() {
 
         {role === "student" && (
           <>
-            <div className="divider">OR</div>
+        <div className="divider">OR</div>
 
-            <button
-              className="google-btn"
-              type="button"
-              onClick={handleGoogleSignIn}
-              disabled={submitting}
-            >
-              <img src="/Google-icon.jpeg" alt="Google" />
-              Sign in with Google
-            </button>
+        <button
+          className="google-btn"
+          type="button"
+          onClick={handleGoogleSignIn}
+          disabled={submitting}
+        >
+          <img src="/Google-icon.jpeg" alt="Google" />
+          Sign in with Google
+        </button>
           </>
         )}
 
