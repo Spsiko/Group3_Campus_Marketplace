@@ -26,7 +26,7 @@ export default function EditListing() {
 
       if (error || !data) {
         alert("Listing not found");
-        navigate("/my-listings");
+        navigate("/student/mylistings");
         return;
       }
 
@@ -62,7 +62,7 @@ export default function EditListing() {
     }
 
     alert("Listing updated successfully!");
-    navigate("/my-listings");
+    navigate("/student/mylistings");
   }
 
   // ------------------------------------------------------------
@@ -142,7 +142,7 @@ export default function EditListing() {
 
               <button
                 className="btn ghost"
-                onClick={() => navigate("/my-listings")}
+                onClick={() => navigate("/student/mylistings")}
                 disabled={saving}
               >
                 Cancel

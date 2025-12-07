@@ -1,12 +1,22 @@
+// supabase/functions/create-checkout-session/index.ts
+
 import { serve } from "https://deno.land/std@0.192.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@12.5.0?target=deno";
 
+// Stripe client
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
   apiVersion: "2022-11-15",
 });
 
-serve(async (req) => {
-  // --- CORS ---
+// Types
+interface CheckoutItem {
+  title: string;
+  price: number;
+  quantity?: number;
+}
+
+serve(async (req: Request): Promise<Response> => {
+  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", {
       headers: {
@@ -19,54 +29,63 @@ serve(async (req) => {
   }
 
   try {
-    const { items } = await req.json();
+    const body = await req.json();
+    const items: CheckoutItem[] = body.items;
 
     if (!items || !Array.isArray(items)) {
-      throw new Error("Items array missing");
+      throw new Error("Invalid or missing 'items' array");
     }
 
-    const lineItems = items.map((i: any, idx: number) => {
-      if (i.price == null || isNaN(Number(i.price))) {
-        throw new Error(`Invalid price for item at index ${idx}`);
-      }
+    // Detect request origin (localhost or production)
+    const origin =
+      req.headers.get("origin") ??
+      "http://localhost:5173"; // fallback
 
-      const priceInCents = Math.round(Number(i.price) * 100);
-      const qty = Number(i.quantity) || 1;
+    // Build Stripe line items
+    const lineItems = items.map((item: CheckoutItem) => {
+      const priceInCents = Math.round(item.price * 100);
+      const qty = item.quantity ?? 1;
 
       return {
         price_data: {
           currency: "USD",
-          product_data: { name: i.title || "Item" },
+          product_data: { name: item.title },
           unit_amount: priceInCents,
         },
         quantity: qty,
       };
     });
 
+    // Create Stripe session
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
       line_items: lineItems,
-      success_url: "http://localhost:5173/student/checkoutsuccess",
-      cancel_url: "http://localhost:5173/student/checkout",
+      success_url: `${origin}/student/checkoutsuccess`,
+      cancel_url: `${origin}/student/checkout`,
     });
 
-    return new Response(JSON.stringify({ id: session.id, url: session.url }), {
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
-
+    return new Response(
+      JSON.stringify({ id: session.id, url: session.url }),
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      }
+    );
   } catch (err) {
     console.error("Stripe error:", err);
 
-    return new Response(JSON.stringify({ error: String(err) }), {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
+    return new Response(
+      JSON.stringify({ error: String(err) }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      }
+    );
   }
 });

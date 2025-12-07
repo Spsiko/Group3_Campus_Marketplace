@@ -144,7 +144,7 @@ export default function StudentCheckoutSuccess() {
 
       await sendNotificationToUser(
         dbUser.id,
-        `Your order ${orderId} has been placed successfully.`, dbUser.id
+        `Your order ${orderId} has been placed successfully.`, dbUser.full_name
       );
 
       // --------------------------------------------------------
@@ -183,29 +183,10 @@ export default function StudentCheckoutSuccess() {
             `Sending seller notification to ${sellerId} for listings: ${listingIds}`
           );
 
-          
           await sendNotificationToUser(
             sellerId,
-            `Your listings (${listingIds}) were purchased in order ${orderId}.` 
+            `Your listings (${listingIds}) were purchased in order ${orderId}.`, dbUser.full_name
           );
-          
-
-          // Fetch seller's real name
-          /*
-          const { data: seller } = await supabase
-          .from("users")
-          .select("full_name")
-          .eq("id", sellerId)
-          .maybeSingle();
-
-          await sendNotificationToUser(
-          sellerId,
-          `Your listings (${listingIds}) were purchased in order ${orderId}.`,
-          seller?.full_name     // send seller's real name
-          );
-          */
-
-
         }
       }
 
