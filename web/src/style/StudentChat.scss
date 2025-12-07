@@ -102,3 +102,21 @@
     }
   }
 }
+
+.chat-header-row {
+  padding: 10px 0 12px 0;
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 10px;
+}
+
+.chat-header-text h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.chat-header-text p {
+  margin: 2px 0 0 0;
+  font-size: 13px;
+  color: #666;
+}

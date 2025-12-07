@@ -15,9 +15,9 @@ type RawOrder = {
 type RawOrderItem = {
   order_id: string;
   listing_id: string;
-  seller_id: string;
+  seller_id: string | null;
   quantity: number | null;
-  unit_price: number;
+  price: number;
   total_amount: number;
 };
 
@@ -25,12 +25,14 @@ type UserRow = {
   id: string;
   full_name: string | null;
   email: string | null;
+  auth_user_id?: string | null;
 };
 
 type ListingRow = {
   id: string;
   title: string | null;
   category: string | null;
+  seller_id: string | null;
 };
 
 type StatusTab = "all" | "pending" | "active" | "delivered" | "issues";
@@ -105,6 +107,10 @@ export default function ManageOrders() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [paymentFilter, setPaymentFilter] = useState<string>("all"); // placeholder
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
+
   useEffect(() => {
     const fetchOrders = async () => {
       setLoading(true);
@@ -132,47 +138,124 @@ export default function ManageOrders() {
         return;
       }
 
-      // 2) Order items
+      // 2) Order items (no join)
       const { data: itemsData, error: itemsError } = await supabase
         .from("order_item")
-        .select("order_id,listing_id,seller_id,quantity,unit_price,total_amount");
+        .select("order_id, listing_id, seller_id, quantity, price, total_amount");
 
       if (itemsError) {
-        console.error(itemsError);
+        console.error("Order items error:", itemsError);
+        setError(itemsError.message);
+        setLoading(false);
+        return;
       }
 
       const items = (itemsData || []) as RawOrderItem[];
 
-      // For joins:
-      const buyerIds = [...new Set(orders.map((o) => o.buyer_id))];
-      const sellerIds = [...new Set(items.map((i) => i.seller_id))];
-      const listingIds = [...new Set(items.map((i) => i.listing_id))];
-
       // 3) Buyers
-      const { data: buyersData } =
+      const buyerIds = [...new Set(orders.map((o) => o.buyer_id))];
+      const { data: buyersData, error: buyersError } =
         buyerIds.length > 0
-          ? await supabase.from("users").select("id,full_name,email").in("id", buyerIds)
-          : { data: [] as UserRow[] };
+          ? await supabase
+              .from("users")
+              .select("id,full_name,email")
+              .in("id", buyerIds)
+          : { data: [] as UserRow[], error: null };
+
+      if (buyersError) {
+        console.error("Buyers error:", buyersError);
+        setError(buyersError.message);
+        setLoading(false);
+        return;
+      }
+
       const buyers = (buyersData || []) as UserRow[];
 
-      // 4) Sellers
-      const { data: sellersData } =
-        sellerIds.length > 0
-          ? await supabase.from("users").select("id,full_name,email").in("id", sellerIds)
-          : { data: [] as UserRow[] };
-      const sellers = (sellersData || []) as UserRow[];
+      // 4) Listings (by listing_id from order_item)
+      const listingIds = [
+        ...new Set(items.map((i) => i.listing_id).filter(Boolean)),
+      ];
 
-      // 5) Listings
-      const { data: listingsData } =
+      const { data: listingsData, error: listingsError } =
         listingIds.length > 0
-          ? await supabase.from("listings").select("id,title,category").in("id", listingIds)
-          : { data: [] as ListingRow[] };
+          ? await supabase
+              .from("listings")
+              .select("id, title, category, seller_id")
+              .in("id", listingIds)
+          : { data: [] as ListingRow[], error: null };
+
+      if (listingsError) {
+        console.error("Listings error:", listingsError);
+        setError(listingsError.message);
+        setLoading(false);
+        return;
+      }
+
       const listings = (listingsData || []) as ListingRow[];
 
-      const buyersMap = new Map(buyers.map((b) => [b.id, b]));
-      const sellersMap = new Map(sellers.map((s) => [s.id, s]));
-      const listingsMap = new Map(listings.map((l) => [l.id, l]));
+      // 5) Sellers (collect seller_ids from listings and order_item.seller_id)
+      const sellerIdsFromListings = listings
+        .map((l) => l.seller_id)
+        .filter(Boolean) as string[];
 
+      const sellerIdsFromItems = items
+        .map((i) => i.seller_id)
+        .filter(Boolean) as string[];
+
+      const sellerIds = [
+        ...new Set([...sellerIdsFromListings, ...sellerIdsFromItems]),
+      ];
+
+      // Fetch sellers, trying to match both users.id and users.auth_user_id
+      let sellers: UserRow[] = [];
+      if (sellerIds.length > 0) {
+        const { data: sellersById, error: sellersByIdError } = await supabase
+          .from("users")
+          .select("id, full_name, email, auth_user_id")
+          .in("id", sellerIds);
+
+        if (sellersByIdError) {
+          console.error("Sellers (by id) error:", sellersByIdError);
+          setError(sellersByIdError.message);
+          setLoading(false);
+          return;
+        }
+
+        const { data: sellersByAuth, error: sellersByAuthError } = await supabase
+          .from("users")
+          .select("id, full_name, email, auth_user_id")
+          .in("auth_user_id", sellerIds);
+
+        if (sellersByAuthError) {
+          console.error("Sellers (by auth_user_id) error:", sellersByAuthError);
+          setError(sellersByAuthError.message);
+          setLoading(false);
+          return;
+        }
+
+        sellers = [
+          ...((sellersById || []) as UserRow[]),
+          ...((sellersByAuth || []) as UserRow[]),
+        ];
+      }
+
+      // Maps
+      const buyersMap = new Map<string, UserRow>(
+        buyers.map((b) => [b.id, b])
+      );
+
+      // sellersMap keyed by BOTH id and auth_user_id so any seller_id form works
+      const sellersMap = new Map<string, UserRow>();
+      sellers.forEach((s: any) => {
+        if (s.id) sellersMap.set(s.id, s);
+        if (s.auth_user_id) sellersMap.set(s.auth_user_id, s);
+      });
+
+      const listingsMap = new Map<string, ListingRow>(
+        listings.map((l) => [l.id, l])
+      );
+
+      // Group items by order_id
       const itemsByOrder: Record<string, RawOrderItem[]> = {};
       items.forEach((it) => {
         if (!itemsByOrder[it.order_id]) itemsByOrder[it.order_id] = [];
@@ -188,9 +271,27 @@ export default function ManageOrders() {
         );
 
         const firstItem = orderItems[0];
-        const firstListing = firstItem ? listingsMap.get(firstItem.listing_id) : null;
+        // Try listing for first item
+        let primaryListing: ListingRow | null = null;
+        if (firstItem) {
+          primaryListing = listingsMap.get(firstItem.listing_id) || null;
+        }
+
+        // Fallback: any listing for this order
+        let fallbackListing = primaryListing;
+        if (!fallbackListing) {
+          for (const item of orderItems) {
+            const l = listingsMap.get(item.listing_id);
+            if (l) {
+              fallbackListing = l;
+              break;
+            }
+          }
+        }
 
         const buyer = buyersMap.get(o.buyer_id);
+
+        // Resolve seller(s)
         let sellerName = "";
         let sellerEmail = "";
 
@@ -199,13 +300,23 @@ export default function ManageOrders() {
           sellerEmail = "";
         } else {
           const distinctSellerIds = [
-            ...new Set(orderItems.map((i) => i.seller_id).filter(Boolean)),
+            ...new Set(
+              orderItems
+                .map((i) => {
+                  const l = listingsMap.get(i.listing_id);
+                  // prefer listing.seller_id, fallback to order_item.seller_id
+                  return (l && l.seller_id) || i.seller_id || undefined;
+                })
+                .filter(Boolean) as string[]
+            ),
           ];
+
           if (distinctSellerIds.length > 1) {
             sellerName = "Multiple sellers";
             sellerEmail = "";
           } else {
-            const s = sellersMap.get(distinctSellerIds[0]);
+            const sellerId = distinctSellerIds[0];
+            const s = sellerId ? sellersMap.get(sellerId) : null;
             sellerName = s?.full_name || s?.email || "Seller";
             sellerEmail = s?.email || "";
           }
@@ -223,11 +334,13 @@ export default function ManageOrders() {
           sellerName,
           sellerEmail,
           itemTitle:
-            firstListing?.title ||
-            (orderItems.length > 1 ? `${orderItems.length} items` : "Item"),
+            fallbackListing?.title ||
+            (orderItems.length > 1
+              ? `${orderItems.length} items`
+              : `Item (${firstItem?.listing_id?.slice(0, 8)}...)`),
           itemCategory:
-            firstListing?.category ||
-            (orderItems.length > 1 ? "Multiple categories" : ""),
+            fallbackListing?.category ||
+            (orderItems.length > 1 ? "Multiple categories" : "Unknown"),
           totalItems,
           totalAmount: o.total_amount || 0,
           statusKey,
@@ -264,9 +377,7 @@ export default function ManageOrders() {
     let rows = [...displayOrders];
 
     // Tab filter
-    rows = rows.filter((r) =>
-      mapStatusTabFilter(tab, r.statusKey)
-    );
+    rows = rows.filter((r) => mapStatusTabFilter(tab, r.statusKey));
 
     // Dropdown status filter (simple: exact status)
     if (statusFilter !== "all") {
@@ -293,6 +404,41 @@ export default function ManageOrders() {
 
     return rows;
   }, [displayOrders, tab, search, statusFilter, paymentFilter]);
+
+  // Pagination logic
+  const paginatedOrders = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredOrders.slice(startIndex, endIndex);
+  }, [filteredOrders, currentPage, itemsPerPage]);
+
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+
+  // Pagination functions
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const goToFirstPage = () => {
+    setCurrentPage(1);
+  };
+
+  const goToLastPage = () => {
+    setCurrentPage(totalPages);
+  };
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [tab, search, statusFilter, paymentFilter]);
 
   const totalOrders = rawOrders.length;
   const pendingOrders = tabCounts.pending;
@@ -472,7 +618,7 @@ export default function ManageOrders() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredOrders.map((o) => (
+                  {paginatedOrders.map((o) => (
                     <tr key={o.order_id}>
                       <td className="col-order">
                         <div className="order-cell">
@@ -543,12 +689,41 @@ export default function ManageOrders() {
 
               <div className="orders-footer">
                 <span>
-                  Showing {filteredOrders.length} of{" "}
-                  {displayOrders.length} orders
+                  Showing {paginatedOrders.length} of {filteredOrders.length} orders
+                  {totalPages > 1 && ` (Page ${currentPage} of ${totalPages})`}
                 </span>
                 <div className="pager">
-                  <button disabled>Previous</button>
-                  <button disabled>Next</button>
+                  <button
+                    onClick={goToFirstPage}
+                    disabled={currentPage === 1}
+                    title="First Page"
+                  >
+                    ««
+                  </button>
+                  <button
+                    onClick={goToPreviousPage}
+                    disabled={currentPage === 1}
+                    title="Previous Page"
+                  >
+                    Previous
+                  </button>
+                  <span className="page-info">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={goToNextPage}
+                    disabled={currentPage === totalPages || totalPages === 0}
+                    title="Next Page"
+                  >
+                    Next
+                  </button>
+                  <button
+                    onClick={goToLastPage}
+                    disabled={currentPage === totalPages || totalPages === 0}
+                    title="Last Page"
+                  >
+                    »»
+                  </button>
                 </div>
               </div>
             </>

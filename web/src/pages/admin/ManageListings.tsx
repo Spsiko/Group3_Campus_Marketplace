@@ -154,6 +154,7 @@ export default function ManageListings() {
   const [query, setQuery] = useState("");
   const [statusTab, setStatusTab] = useState<"all" | ListingStatus>("all");
   const [category, setCategory] = useState<"All" | string>("All");
+  const [statusFilter, setStatusFilter] = useState<"All" | ListingStatus>("All");
 
   // rows for current page
   const [rows, setRows] = useState<ListingUI[]>([]);
@@ -189,7 +190,7 @@ export default function ManageListings() {
   // Reset page when filters/search change
   useEffect(() => {
     setPage(0);
-  }, [statusTab, category, query]);
+  }, [statusTab, category, statusFilter, query]);
 
   // Close actions menu when clicking outside
   useEffect(() => {
@@ -250,6 +251,7 @@ export default function ManageListings() {
         .order("created_at", { ascending: false });
 
       if (statusTab !== "all") q = q.eq("status", statusTab.toLowerCase());
+      if (statusFilter !== "All") q = q.eq("status", statusFilter.toLowerCase());
       if (category !== "All") q = q.eq("category", category);
       const qstr = query.trim();
       if (qstr) q = q.or(`title.ilike.%${qstr}%,description.ilike.%${qstr}%`);
@@ -323,7 +325,7 @@ export default function ManageListings() {
     }
 
     loadPage();
-  }, [statusTab, category, query, page, refreshToken]);
+  }, [statusTab, category, statusFilter, query, page, refreshToken]);
 
   const start = totalMatching === 0 ? 0 : page * PAGE_SIZE + 1;
   const end = Math.min((page + 1) * PAGE_SIZE, totalMatching);
@@ -590,12 +592,25 @@ export default function ManageListings() {
             </div>
           </div>
 
-          <div className="filter disabled">
+          <div className="filter">
             <button className="filter-btn">
               <span className="filter-icon" />
-              All Status
+              {statusFilter === "All" ? "All Status" : statusFilter}
               <span className="caret" />
             </button>
+            <div className="filter-menu">
+              {["All", "Active", "Pending", "Sold", "Rejected"].map(
+                (s) => (
+                  <div
+                    key={s}
+                    className="filter-item"
+                    onClick={() => setStatusFilter(s as "All" | ListingStatus)}
+                  >
+                    {s}
+                  </div>
+                )
+              )}
+            </div>
           </div>
         </div>
 

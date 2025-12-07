@@ -5,7 +5,6 @@ import { supabase } from "../../lib/supabaseClient";
 import { getResolvedUserSync } from "../../lib/resolvedUser";
 import "../../style/studentmessages.scss";
 
-// Same shape as `messages` table
 type ChatMessage = {
   id: string;
   listing_id: string;
@@ -17,7 +16,8 @@ type ChatMessage = {
 
 type ConversationItem = {
   listing_id: string;
-  otherId: string;    // other user's auth_user_id
+  listing_title: string;
+  otherId: string;
   otherName: string;
   lastMessage: string;
   created_at: string;
@@ -31,14 +31,13 @@ export default function StudentMessages() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (!myId) return;
-    loadConversations(myId);
+    if (myId) loadConversations(myId);
   }, [myId]);
 
   async function loadConversations(userId: string) {
     setLoaded(false);
 
-    // 1) Load all messages where I am sender or receiver
+    // 1) Fetch messages where I am sender or receiver
     const { data, error } = await supabase
       .from("messages")
       .select("*")
@@ -54,8 +53,7 @@ export default function StudentMessages() {
 
     const msgs = data as ChatMessage[];
 
-    // 2) For each thread, keep only the latest message:
-    //    key = `${listing_id}::${otherUserId}`
+    // 2) Keep only latest message per thread (listing + otherUser)
     const latestByKey: Record<string, ChatMessage> = {};
 
     for (const msg of msgs) {
@@ -66,9 +64,7 @@ export default function StudentMessages() {
 
       const key = `${msg.listing_id}::${otherId}`;
 
-      if (!latestByKey[key]) {
-        latestByKey[key] = msg;
-      }
+      if (!latestByKey[key]) latestByKey[key] = msg;
     }
 
     const keys = Object.keys(latestByKey);
@@ -78,9 +74,26 @@ export default function StudentMessages() {
       return;
     }
 
-    // 3) Fetch other users' display names from `users`
-    const otherUserIds = [...new Set(keys.map((k) => k.split("::")[1]))];
+    // Collect all needed IDs
+    const listingIds = [...new Set(keys.map(k => k.split("::")[0]))];
+    const otherUserIds = [...new Set(keys.map(k => k.split("::")[1]))];
 
+    // 3) Fetch listing titles
+    const { data: listingRows, error: listingErr } = await supabase
+      .from("listings")
+      .select("id, title")
+      .in("id", listingIds);
+
+    if (listingErr) {
+      console.error("Listing lookup error:", listingErr);
+    }
+
+    const listingMap: Record<string, string> = {};
+    (listingRows || []).forEach((l) => {
+      listingMap[l.id] = l.title || "Item";
+    });
+
+    // 4) Fetch user names for conversation partners
     const { data: userRows, error: usersErr } = await supabase
       .from("users")
       .select("auth_user_id, full_name, email")
@@ -95,13 +108,14 @@ export default function StudentMessages() {
       nameMap[u.auth_user_id] = u.full_name || u.email || "User";
     });
 
-    // 4) Build conversation items
+    // 5) Build conversation list
     const convs: ConversationItem[] = keys.map((key) => {
       const [listing_id, otherId] = key.split("::");
       const lastMsg = latestByKey[key];
 
       return {
         listing_id,
+        listing_title: listingMap[listing_id] || "Listing",
         otherId,
         otherName: nameMap[otherId] || "User",
         lastMessage: lastMsg.content,
@@ -115,65 +129,43 @@ export default function StudentMessages() {
 
   if (!myId) {
     return (
-      <div style={{ padding: 20 }}>
+      <div className="messages-page">
         <h1>Messages</h1>
         <p>Please sign in to view your messages.</p>
       </div>
     );
   }
 
-  if (!loaded) {
-    return <div style={{ padding: 20 }}>Loading messages…</div>;
-  }
+  if (!loaded) return <div className="messages-page">Loading messages…</div>;
 
   return (
     <div className="messages-page">
       <h1>Messages</h1>
-  
+
       <div className="messages-list">
+        {conversations.length === 0 && <p>No conversations yet.</p>}
+
         {conversations.map((c) => (
           <Link
             key={`${c.listing_id}-${c.otherId}`}
             to={`/student/messages/${c.listing_id}/${c.otherId}`}
             className="msg-row"
           >
+            <div className="msg-title">
+              <strong>{c.listing_title}</strong>
+            </div>
+
             <div className="msg-top">
-              <strong className="msg-name">{c.otherName}</strong>
+              <span className="msg-name">{c.otherName}</span>
               <small className="msg-time">
                 {new Date(c.created_at).toLocaleString()}
               </small>
             </div>
-  
+
             <div className="msg-last">{c.lastMessage}</div>
           </Link>
         ))}
       </div>
     </div>
-  );  
-
-  /*
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>Messages</h1>
-
-      {conversations.length === 0 && <p>No conversations yet.</p>}
-
-      {conversations.map((c) => (
-        <Link
-          key={`${c.listing_id}-${c.otherId}`}
-          to={`/student/messages/${c.listing_id}/${c.otherId}`}
-          className="msg-thread"
-        >
-          <strong>{c.otherName}</strong>
-          <div className="msg-last-line">{c.lastMessage}</div>
-          <small className="msg-timestamp">
-            {new Date(c.created_at).toLocaleString()}
-          </small>
-        </Link>
-      ))}
-    </div>
   );
-  */
 }
-
-

@@ -1,5 +1,4 @@
 // src/components/NotificationBell.tsx
-
 import { useEffect, useState, useRef } from "react";
 import { Bell } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
@@ -35,7 +34,7 @@ export default function NotificationBell() {
   }
 
   // -------------------------------------------------------
-  // Realtime subscription
+  // Realtime subscription (FINAL FIX)
   // -------------------------------------------------------
   useEffect(() => {
     if (!userId) return;
@@ -43,26 +42,27 @@ export default function NotificationBell() {
     fetchNotifications();
 
     const channel = supabase
-      .channel("notifications-realtime")
+      .channel(`notif-${userId}`) // user-specific channel
       .on(
         "postgres_changes",
         {
-          event: "*", // catch INSERT + UPDATE
+          event: "INSERT",
           schema: "public",
           table: "notifications",
+          filter: `user_id=eq.${userId}`, // server-side filtering
         },
         (payload) => {
-          const newRow = payload.new as any;
+          const newRow = payload.new;
           if (!newRow) return;
 
-          // Only show notifications belonging to this user
-          if (newRow.user_id === userId) {
-            setNotifications((prev) => [newRow, ...prev]);
-          }
+          console.log("Realtime NOTIFICATION received:", newRow);
+
+          // Add instantly to UI
+          setNotifications((prev) => [newRow, ...prev]);
         }
       )
       .subscribe((status) => {
-        console.log("Realtime status:", status);
+        console.log("Realtime Notifications Status:", status);
       });
 
     return () => {

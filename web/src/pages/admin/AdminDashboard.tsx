@@ -109,7 +109,8 @@ export default function AdminDashboard() {
       const { data: notifData, error: notifError } = await supabase
         .from("notifications")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(10);
 
       if (!notifError && notifData) {
         setNotifications(

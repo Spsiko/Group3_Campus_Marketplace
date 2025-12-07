@@ -118,31 +118,6 @@ export default function Register() {
     }
   };
 
-  // Google sign-in handler
-  const handleGoogleSignIn = async () => {
-    if (submitting) return;
-    setSubmitting(true);
-
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/register`
-        }
-      });
-
-      if (error) {
-        console.error("Google sign-in error:", error);
-        alert(`Google sign-in failed: ${error.message}`);
-      }
-      // On success, Supabase will redirect to Google, then back to our app
-    } catch (err) {
-      console.error("Unexpected Google sign-in error:", err);
-      alert("Something went wrong during Google sign-in. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   return (
     <div className="register-page">
@@ -199,18 +174,6 @@ export default function Register() {
             {submitting ? "Signing up..." : "Sign Up"}
           </button>
         </form>
-
-        <div className="divider">OR</div>
-
-        <button
-          className="google-btn"
-          type="button"
-          onClick={handleGoogleSignIn}
-          disabled={submitting}
-        >
-          <img src="/Google-icon.jpeg" alt="Google" />
-          Sign up with Google
-        </button>
 
         <button className="back-btn" onClick={() => navigate("/login")}>
           Already have an account? Log In

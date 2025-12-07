@@ -66,3 +66,16 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.msg-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 4px;
+}
+
+.msg-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
