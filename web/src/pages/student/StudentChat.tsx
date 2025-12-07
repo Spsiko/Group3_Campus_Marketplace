@@ -4,6 +4,9 @@ import { useParams, Link } from "react-router-dom";
 import { supabase } from "../../lib/supabaseClient";
 import { getResolvedUserSync } from "../../lib/resolvedUser";
 import "../../style/StudentChat.scss";
+//import { sendNotificationToUser } from "../../lib/notifications";
+import { notifyMessageSender } from "../../lib/notifyextras";
+
 
 type ChatMessage = {
   id: string;
@@ -135,6 +138,7 @@ export default function StudentChat() {
   // ---------------------------
   // Send message
   // ---------------------------
+  /*
   async function sendMessage() {
     if (!listingId || !otherUserId || !myId) return;
     if (!newMessage.trim()) return;
@@ -148,6 +152,48 @@ export default function StudentChat() {
 
     setNewMessage("");
   }
+    */
+
+  async function sendMessage() {
+    if (!listingId || !otherUserId || !myId) return;
+    if (!newMessage.trim()) return;
+  
+    const text = newMessage.trim();
+  
+    // Insert into messages
+    const { error } = await supabase.from("messages").insert({
+      listing_id: listingId,
+      sender_auth_id: myId,
+      receiver_auth_id: otherUserId,
+      content: text,
+    });
+  
+    if (error) {
+      console.error("Send error:", error);
+      return;
+    }
+  
+    // Create notification for receiver
+    /*
+    const preview = text.slice(0, 40) + (text.length > 40 ? "..." : "");
+  
+    await sendNotificationToUser(
+      otherUserId,
+      `New message about "${listing?.title}": ${preview}`,
+      myId
+    );
+    */
+
+    await notifyMessageSender(
+      myId,                  // sender
+      otherUserId,           // receiver
+      listing?.title || "",  // listing title
+      newMessage.trim()      // message body
+    );    
+  
+    setNewMessage("");
+  }
+  
 
   // ---------------------------
   // UI
