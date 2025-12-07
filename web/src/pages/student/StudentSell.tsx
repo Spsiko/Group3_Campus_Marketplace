@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import { getResolvedUser } from "../../lib/resolvedUser";
+import { notifyListingPosted } from "../../lib/notifyextras";
 
 const CATEGORIES = [
   { value: "electronics", label: "Electronics" },
@@ -146,6 +147,13 @@ const StudentSell = () => {
       setMessage(`Error: ${error.message}`);
     } else {
       setMessage("Listing posted successfully!");
+
+        // 🔔 NEW: Send listing notification
+      await notifyListingPosted(
+      sellerId,    // seller auth_user_id
+      title        // listing title
+      );
+      
       setTitle("");
       setCategory("");
       setDescription("");

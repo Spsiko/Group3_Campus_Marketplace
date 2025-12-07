@@ -99,3 +99,32 @@ export async function notifyReportFiled(
     console.error("notifyReportFiled error:", err);
   }
 }
+
+// ============================================================================
+// 3. LISTING POSTED NOTIFICATIONS (for the seller immediately after posting)
+// ============================================================================
+export async function notifyListingPosted(
+    sellerAuthId: string,     // auth_user_id of seller
+    listingTitle: string      // title of the new listing
+  ) {
+    try {
+      // Convert seller auth → internal users.id
+      const sellerInternalId = await getInternalUserId(sellerAuthId);
+      if (!sellerInternalId) return;
+  
+      // Seller name (for user_name column)
+      const sellerName = await getUserNameFromInternalId(sellerInternalId);
+  
+      const { error } = await supabase.from("notifications").insert({
+        user_id: sellerInternalId,
+        user_name: sellerName,
+        action: `Your listing "${listingTitle}" has been created and is pending approval.`,
+        status: "active",
+      });
+  
+      if (error) console.error("Listing notification insert failed:", error);
+    } catch (err) {
+      console.error("notifyListingPosted error:", err);
+    }
+  }
+  
