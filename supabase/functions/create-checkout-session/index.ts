@@ -39,7 +39,7 @@ serve(async (req: Request): Promise<Response> => {
     // Detect request origin (localhost or production)
     const origin =
       req.headers.get("origin") ??
-      "http://localhost:5173"; // fallback
+      "http://34.60.37.32"; // fallback
 
     // Build Stripe line items
     const lineItems = items.map((item: CheckoutItem) => {
