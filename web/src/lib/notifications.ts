@@ -1,36 +1,19 @@
-// src/lib/notifications.ts
 import { supabase } from "./supabaseClient";
 
-// Fetch full name from users table
-async function getUserName(userId: string) {
-  const { data, error } = await supabase
-    .from("users")
-    .select("full_name")
-    .eq("id", userId)
-    .maybeSingle();
-
-  if (error || !data) {
-    console.error("Failed to fetch user name:", error);
-    return "User";
-  }
-
-  return data.full_name || "User";
-}
-
+// ---------------------------------------------------------
+// Insert notification with REAL user_name
+// ---------------------------------------------------------
 export async function sendNotificationToUser(
-  targetUserId: string,    // who receives the notification
-  action: string,           // the text message
-  triggeredByUserId?: string  // who caused the notification
+  targetUserId: string,    // receiver
+  action: string,          // message text
+  actorName: string // person who triggered the event
 ) {
   if (!targetUserId) return;
 
-  // If triggeredByUserId exists → use their real name
-  const userName =
-    triggeredByUserId ? await getUserName(triggeredByUserId) : "System";
 
   const record = {
     user_id: targetUserId,
-    user_name: userName,   // <-- always REAL NAME saved
+    user_name: actorName || "User", // REAL sender name
     action: action,
     status: "active",
   };

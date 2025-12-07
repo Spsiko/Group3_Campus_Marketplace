@@ -5,7 +5,6 @@ import { supabase } from "../../lib/supabaseClient";
 import { getResolvedUserSync } from "../../lib/resolvedUser";
 import "../../style/StudentChat.scss";
 
-// Shape of a row in `messages`
 type ChatMessage = {
   id: string;
   listing_id: string;
@@ -31,33 +30,39 @@ export default function StudentChat() {
   const [newMessage, setNewMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
 
+  // NEW: Listing details
+  const [listing, setListing] = useState<any>(null);
+
+  // ---------------------------
+  // Load product details using listing_id
+  // ---------------------------
+  async function loadListingDetails(listingId: string) {
+    const { data, error } = await supabase
+      .from("listings")
+      .select("id, title, price, image_urls")
+      .eq("id", listingId)
+      .single();
+
+    if (!error && data) setListing(data);
+  }
+
   // ---------------------------
   // Load other user's name
   // ---------------------------
   async function loadUserName(otherId: string) {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("users")
       .select("full_name, email")
       .eq("auth_user_id", otherId)
       .single();
 
-    if (error || !data) {
-      console.warn("Could not load other user name:", error);
-      setOtherName("User");
-      return;
-    }
-
-    setOtherName(data.full_name || data.email || "User");
+    setOtherName(data?.full_name || data?.email || "User");
   }
 
   // ---------------------------
-  // Load messages for this chat
+  // Load chat messages
   // ---------------------------
-  async function loadMessages(
-    listingId: string,
-    myId: string,
-    otherId: string
-  ) {
+  async function loadMessages(listingId: string, myId: string, otherId: string) {
     const { data, error } = await supabase
       .from("messages")
       .select("*")
@@ -65,16 +70,13 @@ export default function StudentChat() {
       .order("created_at", { ascending: true });
 
     if (error || !data) {
-      console.error("Message load error:", error);
       setMessages([]);
       return;
     }
 
-    const all = data as ChatMessage[];
-
-    // Keep only messages between (myId, otherId) for this listing
-    const filtered = all.filter(
-      (m) =>
+    // Filter only messages between these two users
+    const filtered = data.filter(
+      (m: ChatMessage) =>
         (m.sender_auth_id === myId && m.receiver_auth_id === otherId) ||
         (m.sender_auth_id === otherId && m.receiver_auth_id === myId)
     );
@@ -96,14 +98,11 @@ export default function StudentChat() {
 
           const belongs =
             msg.listing_id === listingId &&
-            ((msg.sender_auth_id === myId &&
-              msg.receiver_auth_id === otherId) ||
+            ((msg.sender_auth_id === myId && msg.receiver_auth_id === otherId) ||
               (msg.sender_auth_id === otherId &&
                 msg.receiver_auth_id === myId));
 
-          if (belongs) {
-            setMessages((prev) => [...prev, msg]);
-          }
+          if (belongs) setMessages((prev) => [...prev, msg]);
         }
       )
       .subscribe();
@@ -112,7 +111,7 @@ export default function StudentChat() {
   }
 
   // ---------------------------
-  // Initial load + subscription
+  // Initial load
   // ---------------------------
   useEffect(() => {
     if (!listingId || !otherUserId || !myId) {
@@ -122,10 +121,9 @@ export default function StudentChat() {
 
     setLoading(true);
 
+    loadListingDetails(listingId);     // NEW
     loadUserName(otherUserId);
-    loadMessages(listingId, myId, otherUserId).finally(() =>
-      setLoading(false)
-    );
+    loadMessages(listingId, myId, otherUserId).finally(() => setLoading(false));
 
     const channel = subscribeToRealtime(myId, listingId, otherUserId);
 
@@ -135,52 +133,47 @@ export default function StudentChat() {
   }, [listingId, otherUserId, myId]);
 
   // ---------------------------
-  // Send a message
+  // Send message
   // ---------------------------
   async function sendMessage() {
     if (!listingId || !otherUserId || !myId) return;
     if (!newMessage.trim()) return;
 
-    const payload = {
+    await supabase.from("messages").insert({
       listing_id: listingId,
       sender_auth_id: myId,
       receiver_auth_id: otherUserId,
       content: newMessage.trim(),
-    };
-
-    const { error } = await supabase.from("messages").insert(payload);
-
-    if (error) {
-      console.error("Send error:", error);
-      return;
-    }
+    });
 
     setNewMessage("");
   }
 
-  if (!listingId || !otherUserId) {
-    return (
-      <div className="chat-page">
-        <p>Invalid chat URL.</p>
-      </div>
-    );
-  }
+  // ---------------------------
+  // UI
+  // ---------------------------
+  if (!listingId || !otherUserId)
+    return <p className="chat-page">Invalid chat URL.</p>;
 
-  if (!myId) {
-    return (
-      <div className="chat-page">
-        <p>Please sign in to view messages.</p>
-      </div>
-    );
-  }
+  if (!myId) return <p className="chat-page">Please sign in to view messages.</p>;
 
   return (
     <div className="chat-page">
-      <Link to="/student/messages" className="back-button">
-        ← Back
-      </Link>
+      <Link to="/student/messages" className="back-button">← Back</Link>
 
-      <h2 className="chat-header">{otherName}</h2>
+      {/* PRODUCT + USER HEADER */}
+      <div className="chat-header">
+        {listing && (
+          <div className="chat-listing-info">
+
+            <div>
+              <h3>{listing.title}</h3>
+              <h6>Product ID : {listing.id}</h6>
+              <h6>Chat with {otherName}</h6>
+            </div>
+          </div>
+        )}
+      </div>
 
       {loading && <div>Loading messages…</div>}
 
@@ -199,6 +192,7 @@ export default function StudentChat() {
         ))}
       </div>
 
+      {/* SEND MESSAGE SECTION */}
       <div className="chat-input-area">
         <input
           value={newMessage}
