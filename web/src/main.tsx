@@ -100,7 +100,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+      <AppRoutes />
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

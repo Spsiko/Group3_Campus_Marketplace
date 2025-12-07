@@ -72,13 +72,14 @@ export default function AdminDashboard() {
             const { data: notifData, error: notifError } = await supabase
                 .from("notifications")
                 .select("*")
-                .order("created_at", { ascending: false });
+                .order("created_at", { ascending: false })
+                .limit(10);
             if (!notifError && notifData) {
                 setNotifications(notifData.map((n) => ({
                     id: n.id,
-                    user_name: n.user_name,
-                    action: n.action,
-                    status: n.status,
+                    user_name: n.user_name || 'Unknown User',
+                    action: n.action || 'Unknown Action',
+                    status: n.status || 'active',
                     created_at: n.created_at,
                 })));
             }
@@ -100,5 +101,9 @@ export default function AdminDashboard() {
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2,
                                     })}`
-                                    : "…" }), _jsx("div", { className: "kpi-delta up", children: "Total value of sold items" })] })] }), _jsxs("div", { className: "card activity", children: [_jsx("div", { className: "activity-title", children: "Recent Activity" }), notifications.map((n) => (_jsxs("div", { className: "row", children: [_jsxs("div", { children: [_jsx("b", { children: n.user_name }), " ", n.action, _jsx("div", { className: "time", children: new Date(n.created_at).toLocaleString() })] }), _jsx("span", { className: `badge ${statusToBadgeClass[n.status]}`, children: n.status })] }, n.id))), notifications.length === 0 && (_jsx("div", { className: "row", children: _jsx("div", { children: "No recent activity yet." }) }))] })] }));
+                                    : "…" }), _jsx("div", { className: "kpi-delta up", children: "Total value of sold items" })] })] }), _jsxs("div", { className: "card activity", style: {
+                    maxHeight: '600px',
+                    overflowY: 'auto',
+                    overflowX: 'hidden'
+                }, children: [_jsx("div", { className: "activity-title", children: "Recent Activity" }), notifications.map((n) => (_jsxs("div", { className: "row", children: [_jsxs("div", { children: [_jsx("b", { children: n.user_name }), " ", n.action, _jsx("div", { className: "time", children: new Date(n.created_at).toLocaleString() })] }), _jsx("span", { className: `badge ${statusToBadgeClass[n.status]}`, children: n.status })] }, n.id))), notifications.length === 0 && (_jsx("div", { className: "row", children: _jsx("div", { children: "No recent activity yet." }) }))] })] }));
 }

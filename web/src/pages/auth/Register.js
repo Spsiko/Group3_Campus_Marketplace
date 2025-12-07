@@ -92,31 +92,5 @@ export default function Register() {
             setSubmitting(false);
         }
     };
-    // Google sign-in handler
-    const handleGoogleSignIn = async () => {
-        if (submitting)
-            return;
-        setSubmitting(true);
-        try {
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: "google",
-                options: {
-                    redirectTo: `${window.location.origin}/register`
-                }
-            });
-            if (error) {
-                console.error("Google sign-in error:", error);
-                alert(`Google sign-in failed: ${error.message}`);
-            }
-            // On success, Supabase will redirect to Google, then back to our app
-        }
-        catch (err) {
-            console.error("Unexpected Google sign-in error:", err);
-            alert("Something went wrong during Google sign-in. Please try again.");
-        }
-        finally {
-            setSubmitting(false);
-        }
-    };
-    return (_jsx("div", { className: "register-page", children: _jsxs("div", { className: "register-card", children: [_jsx("h2", { children: "Student Sign Up" }), _jsxs("form", { onSubmit: handleRegister, children: [_jsx("label", { children: "Full Name *" }), _jsx("input", { type: "text", placeholder: "Enter your full name", value: name, onChange: (e) => setName(e.target.value), "data-testid": "register-name", required: true }), _jsx("label", { children: "Email Address *" }), _jsx("input", { type: "email", placeholder: "Enter your email", value: email, onChange: (e) => setEmail(e.target.value), "data-testid": "register-email", required: true }), _jsx("label", { children: "Password *" }), _jsx("input", { type: "password", placeholder: "Enter your password", value: password, onChange: (e) => setPassword(e.target.value), "data-testid": "register-password", required: true }), _jsx("label", { children: "Confirm Password *" }), _jsx("input", { type: "password", placeholder: "Confirm your password", value: confirmPassword, onChange: (e) => setConfirmPassword(e.target.value), "data-testid": "register-confirm", required: true }), _jsx("button", { type: "submit", className: "register-btn", "data-testid": "register-submit", disabled: submitting, children: submitting ? "Signing up..." : "Sign Up" })] }), _jsx("div", { className: "divider", children: "OR" }), _jsxs("button", { className: "google-btn", type: "button", onClick: handleGoogleSignIn, disabled: submitting, children: [_jsx("img", { src: "/Google-icon.jpeg", alt: "Google" }), "Sign up with Google"] }), _jsx("button", { className: "back-btn", onClick: () => navigate("/login"), children: "Already have an account? Log In" }), _jsx("button", { className: "back-btn", onClick: () => navigate("/"), children: "Back to Landing Page" })] }) }));
+    return (_jsx("div", { className: "register-page", children: _jsxs("div", { className: "register-card", children: [_jsx("h2", { children: "Student Sign Up" }), _jsxs("form", { onSubmit: handleRegister, children: [_jsx("label", { children: "Full Name *" }), _jsx("input", { type: "text", placeholder: "Enter your full name", value: name, onChange: (e) => setName(e.target.value), "data-testid": "register-name", required: true }), _jsx("label", { children: "Email Address *" }), _jsx("input", { type: "email", placeholder: "Enter your email", value: email, onChange: (e) => setEmail(e.target.value), "data-testid": "register-email", required: true }), _jsx("label", { children: "Password *" }), _jsx("input", { type: "password", placeholder: "Enter your password", value: password, onChange: (e) => setPassword(e.target.value), "data-testid": "register-password", required: true }), _jsx("label", { children: "Confirm Password *" }), _jsx("input", { type: "password", placeholder: "Confirm your password", value: confirmPassword, onChange: (e) => setConfirmPassword(e.target.value), "data-testid": "register-confirm", required: true }), _jsx("button", { type: "submit", className: "register-btn", "data-testid": "register-submit", disabled: submitting, children: submitting ? "Signing up..." : "Sign Up" })] }), _jsx("button", { className: "back-btn", onClick: () => navigate("/login"), children: "Already have an account? Log In" }), _jsx("button", { className: "back-btn", onClick: () => navigate("/"), children: "Back to Landing Page" })] }) }));
 }
