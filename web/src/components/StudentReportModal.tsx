@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { getResolvedUser } from "../lib/resolvedUser";
+//import { sendNotificationToUser } from "../lib/notifications";
 import "../style/StudentReport.scss";
+import { notifyReportFiled } from "../lib/notifyextras";
+
 
 // ----- Types -----
 type ReportListingInput = {
@@ -21,16 +24,27 @@ export default function StudentReportModal({
   const [priority, setPriority] = useState("Low");
   const [description, setDescription] = useState("");
 
-  // -------------------------------------------
-  // Allowed categories based on reportType
-  // -------------------------------------------
   const categoryOptions =
     listing.reportType === "user"
       ? ["Harassment", "Scam/Fraud"]
       : ["Spam", "Fake Listing", "Inappropriate Content", "Scam/Fraud", "Other"];
 
+  // -----------------------------------------------------------
+  // Helper: Convert auth_user_id → internal users.id
+  // -----------------------------------------------------------
+  async function getInternalUserId(authId: string) {
+    const { data } = await supabase
+      .from("users")
+      .select("id")
+      .eq("auth_user_id", authId)
+      .maybeSingle();
+
+    return data?.id || null;
+  }
+
   async function submitReport() {
     const user = await getResolvedUser();
+
     if (!user) {
       alert("You must be logged in to submit a report.");
       return;
@@ -41,51 +55,31 @@ export default function StudentReportModal({
       return;
     }
 
-    // ------------------------------------------------------
-    // 1. Convert SELLER auth_user_id → internal users.id
-    // ------------------------------------------------------
-    const { data: reportedUser, error: userErr } = await supabase
-      .from("users")
-      .select("id")
-      .eq("auth_user_id", listing.seller_id)
-      .single();
-
-    if (userErr || !reportedUser) {
+    // 1. Resolve SELLER internal ID
+    const reportedUserId = await getInternalUserId(listing.seller_id);
+    if (!reportedUserId) {
       alert("Could not look up seller.");
-      console.error("Seller lookup error:", userErr);
       return;
     }
 
-    const reportedUserId = reportedUser.id;
-
-    // ------------------------------------------------------
-    // 2. Convert REPORTER auth_user_id → internal users.id
-    //    REQUIRED FOR FK: reports_reporter_id_fkey
-    // ------------------------------------------------------
-    const { data: reporterUser, error: reporterErr } = await supabase
-      .from("users")
-      .select("id")
-      .eq("auth_user_id", user.auth_user_id)
-      .single();
-
-    if (reporterErr || !reporterUser) {
-      alert("Could not find your user profile.");
-      console.error("Reporter lookup error:", reporterErr);
+    // 2. Resolve REPORTER internal ID
+    const reporterId = await getInternalUserId(user.auth_user_id);
+    if (!reporterId) {
+      alert("Could not resolve your profile.");
       return;
     }
 
-    const reporterId = reporterUser.id;
-
     // ------------------------------------------------------
-    // 3. Insert the report (all values DB-valid)
+    // 3. Insert report
     // ------------------------------------------------------
     const { error } = await supabase.from("reports").insert({
-      report_type: listing.reportType, // "listing" or "user"
+      report_type: listing.reportType,
       reported_user_id: reportedUserId,
-      reported_listing_id: listing.reportType === "listing" ? listing.id : null,
-      reporter_id: reporterId, // FIXED FK
+      reported_listing_id:
+        listing.reportType === "listing" ? listing.id : null,
+      reporter_id: reporterId,
       category,
-      priority, // "Low" | "Medium" | "High" | "Critical"
+      priority,
       status: "Open",
       description
     });
@@ -95,6 +89,36 @@ export default function StudentReportModal({
       alert(error.message);
       return;
     }
+
+    // ------------------------------------------------------
+    // 4. SEND NOTIFICATIONS
+    // ------------------------------------------------------
+
+    // Notify seller (they receive a report alert)
+    /*
+    await sendNotificationToUser(
+      reportedUserId,
+      `Your ${listing.reportType} has been reported for: ${category}`,
+      reporterId // show reporter name instead of "system"
+    );
+    */
+
+    await notifyReportFiled(
+      user.auth_user_id,      // reporter auth ID
+      listing.seller_id,      // seller auth ID
+      listing.id,             // listing title or id (use title if available)
+      category                // report category
+    );
+    
+
+    // OPTIONAL: notify admin(s)
+    // Uncomment once admin internal IDs are known:
+    //
+    // await sendNotificationToUser(
+    //   ADMIN_INTERNAL_ID,
+    //   `A new report was submitted for ${listing.reportType} (${listing.id})`,
+    //   reporterId
+    // );
 
     alert("Report submitted successfully.");
     onClose();
