@@ -2,6 +2,8 @@
 
 A full-stack e-commerce platform built for university students to buy and sell items within their campus community. Built with React, TypeScript, Supabase, and Stripe integration.
 
+Deployed App on http://34.60.37.32/
+
 ## 📁 Project Structure
 
 ```
